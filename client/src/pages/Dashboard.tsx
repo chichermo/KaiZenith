@@ -124,7 +124,9 @@ const StatCard: React.FC<{
             flexShrink: 0,
           }}
         >
-          {React.cloneElement(icon as React.ReactElement, { sx: { fontSize: { xs: '20px', sm: '24px' } } })}
+          <Box sx={{ fontSize: { xs: '20px', sm: '24px' } }}>
+            {icon}
+          </Box>
         </Box>
       </Box>
     </CardContent>
