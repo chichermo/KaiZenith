@@ -20,7 +20,7 @@ import Workflow from './pages/Workflow';
 import Inventory from './pages/Inventory';
 import Projects from './pages/Projects';
 
-// Componente para rutas protegidas
+// Componente para rutas protegidas (DESACTIVADO TEMPORALMENTE)
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -28,22 +28,24 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <div>Cargando...</div>;
   }
   
-  return user ? <>{children}</> : <Navigate to="/login" />;
+  // Login desactivado - siempre permitir acceso
+  return <>{children}</>;
 };
 
 // Componente principal de la aplicación
 const AppContent: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) {
+  // Mostrar loading mientras se inicializa el usuario de prueba
+  if (loading) {
     return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div>Cargando...</div>
+      </Box>
     );
   }
 
+  // Login desactivado - acceso directo sin autenticación
   return (
     <Layout>
       <Routes>
@@ -62,6 +64,8 @@ const AppContent: React.FC = () => {
         <Route path="/workflow" element={<Workflow />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/projects" element={<Projects />} />
+        {/* Ruta de login comentada pero disponible para reactivar más tarde */}
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Layout>

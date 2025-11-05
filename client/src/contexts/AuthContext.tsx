@@ -30,17 +30,18 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para manejar errores de autenticación
+// Interceptor para manejar errores de autenticación (DESACTIVADO TEMPORALMENTE)
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-    }
+    // Login desactivado temporalmente - no redirigir al login
+    // if (error.response?.status === 401 || error.response?.status === 403) {
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('user');
+    //   if (window.location.pathname !== '/login') {
+    //     window.location.href = '/login';
+    //   }
+    // }
     return Promise.reject(error);
   }
 );
@@ -51,20 +52,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+    // LOGIN DESACTIVADO TEMPORALMENTE - Usuario de prueba automático
+    const defaultUser: User = {
+      id: 1,
+      email: 'admin@patolin.cl',
+      name: 'Usuario Administrador',
+      role: 'admin',
+    };
     
-    if (storedToken && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        setToken(storedToken);
-      } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
-    }
+    // Establecer usuario por defecto automáticamente
+    setUser(defaultUser);
+    setToken('test-token-temporary');
     setLoading(false);
+    
+    // Código original comentado para reactivar más tarde:
+    // const storedToken = localStorage.getItem('token');
+    // const userData = localStorage.getItem('user');
+    // 
+    // if (storedToken && userData) {
+    //   try {
+    //     const parsedUser = JSON.parse(userData);
+    //     setUser(parsedUser);
+    //     setToken(storedToken);
+    //   } catch (error) {
+    //     localStorage.removeItem('token');
+    //     localStorage.removeItem('user');
+    //   }
+    // }
+    // setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {

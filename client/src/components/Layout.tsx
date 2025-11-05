@@ -66,9 +66,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    // Login desactivado temporalmente - no hacer logout
+    // logout();
+    // navigate('/login');
     handleMenuClose();
+    // Por ahora, solo cerrar el menú
   };
 
   const menuItems = [
