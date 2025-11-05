@@ -377,12 +377,20 @@ const theme = createTheme({
             backgroundColor: '#fafbfc',
             fontWeight: 600,
             color: '#37474f',
-            fontSize: { xs: '0.688rem', sm: '0.75rem' },
+            fontSize: '0.75rem',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
             borderBottom: '2px solid #e0e0e0',
-            padding: { xs: '10px 12px', sm: '12px 14px', md: '14px 16px' },
-            whiteSpace: { xs: 'normal', sm: 'nowrap' },
+            padding: '14px 16px',
+            whiteSpace: 'nowrap',
+            '@media (max-width:600px)': {
+              fontSize: '0.688rem',
+              padding: '10px 12px',
+              whiteSpace: 'normal',
+            },
+            '@media (min-width:600px) and (max-width:960px)': {
+              padding: '12px 14px',
+            },
           },
         },
       },
@@ -391,10 +399,17 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderColor: '#e8eaed',
-          padding: { xs: '10px 12px', sm: '12px 14px', md: '14px 16px' },
-          fontSize: { xs: '0.813rem', sm: '0.875rem' },
+          padding: '14px 16px',
+          fontSize: '0.875rem',
           color: '#212121',
-          wordBreak: { xs: 'break-word', sm: 'normal' },
+          '@media (max-width:600px)': {
+            padding: '10px 12px',
+            fontSize: '0.813rem',
+            wordBreak: 'break-word',
+          },
+          '@media (min-width:600px) and (max-width:960px)': {
+            padding: '12px 14px',
+          },
           '&.MuiTableCell-body': {
             '&:hover': {
               backgroundColor: '#fafbfc',
@@ -422,7 +437,10 @@ const theme = createTheme({
           overflowX: 'auto',
           WebkitOverflowScrolling: 'touch',
           '&::-webkit-scrollbar': {
-            height: { xs: '4px', sm: '8px' },
+            height: '8px',
+            '@media (max-width:600px)': {
+              height: '4px',
+            },
           },
         },
       },
@@ -456,50 +474,81 @@ const theme = createTheme({
           borderRadius: 4,
           border: '1px solid #e8eaed',
           boxShadow: '0px 8px 24px rgba(0,0,0,0.12)',
-          margin: { xs: '16px', sm: '32px' },
-          maxWidth: { xs: 'calc(100% - 32px)', sm: '600px' },
-          maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' },
+          margin: '32px',
+          maxWidth: '600px',
+          maxHeight: 'calc(100% - 64px)',
+          '@media (max-width:600px)': {
+            margin: '16px',
+            maxWidth: 'calc(100% - 32px)',
+            maxHeight: 'calc(100% - 32px)',
+          },
         },
         paperWidthSm: {
-          maxWidth: { xs: 'calc(100% - 32px)', sm: '600px' },
+          maxWidth: '600px',
+          '@media (max-width:600px)': {
+            maxWidth: 'calc(100% - 32px)',
+          },
         },
         paperWidthMd: {
-          maxWidth: { xs: 'calc(100% - 32px)', sm: '900px' },
+          maxWidth: '900px',
+          '@media (max-width:600px)': {
+            maxWidth: 'calc(100% - 32px)',
+          },
         },
         paperWidthLg: {
-          maxWidth: { xs: 'calc(100% - 32px)', sm: '1200px' },
+          maxWidth: '1200px',
+          '@media (max-width:600px)': {
+            maxWidth: 'calc(100% - 32px)',
+          },
         },
       },
     },
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          padding: { xs: '16px 20px', sm: '20px 24px' },
+          padding: '20px 24px',
           borderBottom: '1px solid #e8eaed',
           backgroundColor: '#fafbfc',
-          fontSize: { xs: '1rem', sm: '1.125rem' },
+          fontSize: '1.125rem',
+          '@media (max-width:600px)': {
+            padding: '16px 20px',
+            fontSize: '1rem',
+          },
         },
       },
     },
     MuiDialogContent: {
       styleOverrides: {
         root: {
-          padding: { xs: '16px 20px', sm: '20px', md: '24px' },
+          padding: '24px',
           overflowY: 'auto',
+          '@media (max-width:600px)': {
+            padding: '16px 20px',
+          },
+          '@media (min-width:600px) and (max-width:960px)': {
+            padding: '20px',
+          },
         },
       },
     },
     MuiDialogActions: {
       styleOverrides: {
         root: {
-          padding: { xs: '12px 16px', sm: '16px 20px', md: '16px 24px' },
+          padding: '16px 24px',
           borderTop: '1px solid #e8eaed',
           backgroundColor: '#fafbfc',
           gap: '8px',
-          flexWrap: { xs: 'wrap', sm: 'nowrap' },
-          '& > button': {
-            flex: { xs: '1 1 auto', sm: 'none' },
-            minWidth: { xs: 'calc(50% - 4px)', sm: 'auto' },
+          flexWrap: 'nowrap',
+          '@media (max-width:600px)': {
+            padding: '12px 16px',
+            flexWrap: 'wrap',
+            '& > button': {
+              flex: '1 1 auto',
+              minWidth: 'calc(50% - 4px)',
+            },
+          },
+          '@media (min-width:600px) and (max-width:960px)': {
+            padding: '16px 20px',
           },
         },
       },
