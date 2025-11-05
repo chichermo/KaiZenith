@@ -58,16 +58,16 @@ const StatCard: React.FC<{
       },
     }}
   >
-    <CardContent sx={{ p: 2.5 }}>
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ flex: 1 }}>
+    <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: { xs: 1.5, sm: 2 } }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography 
             variant="overline" 
             component="div"
             sx={{ 
               fontWeight: 500,
               color: '#78909c',
-              fontSize: '0.688rem',
+              fontSize: { xs: '0.625rem', sm: '0.688rem' },
               letterSpacing: '0.1em',
               mb: 0.5,
             }}
@@ -80,9 +80,10 @@ const StatCard: React.FC<{
             sx={{ 
               fontWeight: 500,
               color: '#212121',
-              fontSize: '1.75rem',
+              fontSize: { xs: '1.5rem', sm: '1.625rem', md: '1.75rem' },
               lineHeight: 1.2,
               mb: trend ? 0.5 : 0,
+              wordBreak: 'break-word',
             }}
           >
             {value}
@@ -114,15 +115,16 @@ const StatCard: React.FC<{
                    color === 'success.main' ? '#2e7d32' :
                    color === 'warning.main' ? '#f57c00' : '#0277bd',
             borderRadius: 1.5,
-            p: 1,
+            p: { xs: 0.75, sm: 1 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minWidth: 40,
-            height: 40,
+            minWidth: { xs: 36, sm: 40 },
+            height: { xs: 36, sm: 40 },
+            flexShrink: 0,
           }}
         >
-          {icon}
+          {React.cloneElement(icon as React.ReactElement, { sx: { fontSize: { xs: '20px', sm: '24px' } } })}
         </Box>
       </Box>
     </CardContent>
@@ -189,8 +191,8 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Box>
-      <Box sx={{ mb: 4 }}>
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ mb: { xs: 2, sm: 3, md: 4 } }}>
         <Typography 
           variant="h4" 
           component="h1" 
@@ -198,17 +200,17 @@ const Dashboard: React.FC = () => {
             fontWeight: 500,
             color: '#212121',
             mb: 0.5,
-            fontSize: '1.75rem',
+            fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
           }}
         >
           Dashboard
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+        <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}>
           Resumen operativo y financiero del negocio
         </Typography>
       </Box>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }}>
         {/* Estadísticas principales */}
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
@@ -246,41 +248,41 @@ const Dashboard: React.FC = () => {
         {/* Estadísticas detalladas */}
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%', border: '1px solid #e8eaed' }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
               <Typography 
                 variant="subtitle1" 
                 gutterBottom 
                 sx={{ 
                   fontWeight: 500,
-                  mb: 2.5,
+                  mb: { xs: 2, sm: 2.5 },
                   color: '#212121',
-                  fontSize: '0.938rem',
+                  fontSize: { xs: '0.875rem', sm: '0.938rem' },
                   borderBottom: '1px solid #e8eaed',
-                  pb: 1.5,
+                  pb: { xs: 1, sm: 1.5 },
                 }}
               >
                 Estado de Clientes
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, pb: 2, borderBottom: '1px solid #f5f7fa' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem', mb: 0.5 }}>Activos</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: '1.25rem' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 2.5 }, pb: { xs: 1.5, sm: 2 }, borderBottom: '1px solid #f5f7fa' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' }, mb: 0.5 }}>Activos</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                     {stats?.clients.active || 0}
                   </Typography>
                 </Box>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: '#e8f5e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <PeopleIcon sx={{ fontSize: 20, color: '#2e7d32' }} />
+                <Box sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, borderRadius: '50%', backgroundColor: '#e8f5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', ml: 1.5, flexShrink: 0 }}>
+                  <PeopleIcon sx={{ fontSize: { xs: 18, sm: 20 }, color: '#2e7d32' }} />
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem', mb: 0.5 }}>Potenciales</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: '1.25rem' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' }, mb: 0.5 }}>Potenciales</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                     {stats?.clients.potential || 0}
                   </Typography>
                 </Box>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: '#fff3e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <PeopleIcon sx={{ fontSize: 20, color: '#f57c00' }} />
+                <Box sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, borderRadius: '50%', backgroundColor: '#fff3e0', display: 'flex', alignItems: 'center', justifyContent: 'center', ml: 1.5, flexShrink: 0 }}>
+                  <PeopleIcon sx={{ fontSize: { xs: 18, sm: 20 }, color: '#f57c00' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -289,52 +291,52 @@ const Dashboard: React.FC = () => {
 
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%', border: '1px solid #e8eaed' }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
               <Typography 
                 variant="subtitle1" 
                 gutterBottom 
                 sx={{ 
                   fontWeight: 500,
-                  mb: 2.5,
+                  mb: { xs: 2, sm: 2.5 },
                   color: '#212121',
-                  fontSize: '0.938rem',
+                  fontSize: { xs: '0.875rem', sm: '0.938rem' },
                   borderBottom: '1px solid #e8eaed',
-                  pb: 1.5,
+                  pb: { xs: 1, sm: 1.5 },
                 }}
               >
                 Estado de Facturas
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, pb: 2, borderBottom: '1px solid #f5f7fa' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem', mb: 0.5 }}>Pagadas</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: '1.25rem' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 2.5 }, pb: { xs: 1.5, sm: 2 }, borderBottom: '1px solid #f5f7fa' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' }, mb: 0.5 }}>Pagadas</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                     {stats?.invoices.paid || 0}
                   </Typography>
                 </Box>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: '#e8f5e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ReceiptIcon sx={{ fontSize: 20, color: '#2e7d32' }} />
+                <Box sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, borderRadius: '50%', backgroundColor: '#e8f5e9', display: 'flex', alignItems: 'center', justifyContent: 'center', ml: 1.5, flexShrink: 0 }}>
+                  <ReceiptIcon sx={{ fontSize: { xs: 18, sm: 20 }, color: '#2e7d32' }} />
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, pb: 2, borderBottom: '1px solid #f5f7fa' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem', mb: 0.5 }}>Pendientes</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: '1.25rem' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 2.5 }, pb: { xs: 1.5, sm: 2 }, borderBottom: '1px solid #f5f7fa' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' }, mb: 0.5 }}>Pendientes</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                     {stats?.invoices.pending || 0}
                   </Typography>
                 </Box>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: '#fff3e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ReceiptIcon sx={{ fontSize: 20, color: '#f57c00' }} />
+                <Box sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, borderRadius: '50%', backgroundColor: '#fff3e0', display: 'flex', alignItems: 'center', justifyContent: 'center', ml: 1.5, flexShrink: 0 }}>
+                  <ReceiptIcon sx={{ fontSize: { xs: 18, sm: 20 }, color: '#f57c00' }} />
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem', mb: 0.5 }}>Valor Total</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#0d47a1', fontSize: '1.25rem' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' }, mb: 0.5 }}>Valor Total</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 500, color: '#0d47a1', fontSize: { xs: '1.125rem', sm: '1.25rem' }, wordBreak: 'break-word' }}>
                     ${(stats?.invoices.total_value || 0).toLocaleString('es-CL')}
                   </Typography>
                 </Box>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', backgroundColor: '#e3f2fd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <AccountBalanceIcon sx={{ fontSize: 20, color: '#0d47a1' }} />
+                <Box sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, borderRadius: '50%', backgroundColor: '#e3f2fd', display: 'flex', alignItems: 'center', justifyContent: 'center', ml: 1.5, flexShrink: 0 }}>
+                  <AccountBalanceIcon sx={{ fontSize: { xs: 18, sm: 20 }, color: '#0d47a1' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -344,58 +346,58 @@ const Dashboard: React.FC = () => {
         {/* Resumen financiero */}
         <Grid item xs={12}>
           <Card sx={{ border: '1px solid #e8eaed' }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
               <Typography 
                 variant="subtitle1" 
                 gutterBottom 
                 sx={{ 
                   fontWeight: 500,
-                  mb: 3,
+                  mb: { xs: 2, sm: 2.5, md: 3 },
                   color: '#212121',
-                  fontSize: '0.938rem',
+                  fontSize: { xs: '0.875rem', sm: '0.938rem' },
                   borderBottom: '1px solid #e8eaed',
-                  pb: 1.5,
+                  pb: { xs: 1, sm: 1.5 },
                 }}
               >
                 Resumen Financiero
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ p: 2, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#0d47a1', backgroundColor: '#ffffff' } }}>
-                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: '0.688rem', letterSpacing: '0.1em', display: 'block', mb: 1 }}>
+                  <Box sx={{ p: { xs: 1.5, sm: 2 }, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#0d47a1', backgroundColor: '#ffffff' } }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: { xs: '0.625rem', sm: '0.688rem' }, letterSpacing: '0.1em', display: 'block', mb: 1 }}>
                       Ingresos Totales
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: '1.25rem' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: { xs: '1.125rem', sm: '1.25rem' }, wordBreak: 'break-word' }}>
                       ${(stats?.invoices.total_value || 0).toLocaleString('es-CL')}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ p: 2, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#2e7d32', backgroundColor: '#ffffff' } }}>
-                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: '0.688rem', letterSpacing: '0.1em', display: 'block', mb: 1 }}>
+                  <Box sx={{ p: { xs: 1.5, sm: 2 }, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#2e7d32', backgroundColor: '#ffffff' } }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: { xs: '0.625rem', sm: '0.688rem' }, letterSpacing: '0.1em', display: 'block', mb: 1 }}>
                       Facturas Pagadas
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: '1.25rem' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#2e7d32', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                       {stats?.invoices.paid || 0}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ p: 2, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#f57c00', backgroundColor: '#ffffff' } }}>
-                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: '0.688rem', letterSpacing: '0.1em', display: 'block', mb: 1 }}>
+                  <Box sx={{ p: { xs: 1.5, sm: 2 }, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#f57c00', backgroundColor: '#ffffff' } }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: { xs: '0.625rem', sm: '0.688rem' }, letterSpacing: '0.1em', display: 'block', mb: 1 }}>
                       Facturas Pendientes
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: '1.25rem' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#f57c00', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                       {stats?.invoices.pending || 0}
                     </Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
-                  <Box sx={{ p: 2, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#0d47a1', backgroundColor: '#ffffff' } }}>
-                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: '0.688rem', letterSpacing: '0.1em', display: 'block', mb: 1 }}>
+                  <Box sx={{ p: { xs: 1.5, sm: 2 }, border: '1px solid #e8eaed', backgroundColor: '#fafbfc', borderRadius: 1, transition: 'all 0.2s ease', '&:hover': { borderColor: '#0d47a1', backgroundColor: '#ffffff' } }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ fontSize: { xs: '0.625rem', sm: '0.688rem' }, letterSpacing: '0.1em', display: 'block', mb: 1 }}>
                       Total Clientes
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#0d47a1', fontSize: '1.25rem' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#0d47a1', fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
                       {stats?.clients.total || 0}
                     </Typography>
                   </Box>

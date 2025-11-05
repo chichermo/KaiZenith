@@ -175,28 +175,40 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ml: { sm: `${drawerWidth}px` },
         }}
       >
-        <Toolbar sx={{ minHeight: '64px !important', px: { xs: 2, sm: 3 }, backgroundColor: '#ffffff' }}>
+        <Toolbar sx={{ minHeight: { xs: '56px !important', sm: '64px !important' }, px: { xs: 1.5, sm: 2, md: 3 }, backgroundColor: '#ffffff' }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
             sx={{ 
-              mr: 2, 
+              mr: { xs: 1, sm: 2 }, 
               display: { sm: 'none' },
               color: '#37474f',
+              padding: { xs: '8px', sm: '12px' },
             }}
           >
-            <MenuIcon />
+            <MenuIcon sx={{ fontSize: { xs: '24px', sm: '28px' } }} />
           </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 500, fontSize: '1rem', color: '#212121' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, minWidth: 0 }}>
+            <Typography 
+              variant="h6" 
+              noWrap 
+              component="div" 
+              sx={{ 
+                fontWeight: 500, 
+                fontSize: { xs: '0.875rem', sm: '0.938rem', md: '1rem' }, 
+                color: '#212121',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               Sistema ERP Financiero
             </Typography>
           </Box>
           <NotificationBell />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 } }}>
+            <Box sx={{ textAlign: 'right', display: { xs: 'none', md: 'block' } }}>
               <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.813rem', color: '#212121' }}>
                 {user?.name}
               </Typography>
@@ -283,7 +295,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: { xs: '280px', sm: drawerWidth },
+              maxWidth: '85vw',
+            },
           }}
         >
           {drawer}
@@ -303,14 +319,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 3 },
+          p: { xs: 1.5, sm: 2, md: 3 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           backgroundColor: '#f5f7fa',
           minHeight: '100vh',
+          overflowX: 'hidden',
         }}
       >
-        <Toolbar />
-        <Box sx={{ maxWidth: '1600px', mx: 'auto' }}>
+        <Toolbar sx={{ minHeight: { xs: '56px !important', sm: '64px !important' } }} />
+        <Box sx={{ maxWidth: '1600px', mx: 'auto', width: '100%' }}>
           {children}
         </Box>
       </Box>

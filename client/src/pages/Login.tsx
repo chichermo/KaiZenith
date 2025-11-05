@@ -43,18 +43,19 @@ const Login: React.FC = () => {
         backgroundColor: '#f5f7fa',
       }}
     >
-      <Container component="main" maxWidth="sm">
+      <Container component="main" maxWidth="sm" sx={{ px: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            width: '100%',
           }}
         >
           <Paper
             elevation={1}
             sx={{
-              padding: { xs: 3, sm: 4 },
+              padding: { xs: 2.5, sm: 3, md: 4 },
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -69,11 +70,11 @@ const Login: React.FC = () => {
               src="/Logo.jpg"
               alt="KaiZenith Spa Logo"
               sx={{
-                height: 64,
+                height: { xs: 56, sm: 64 },
                 width: 'auto',
-                maxWidth: '70%',
+                maxWidth: { xs: '80%', sm: '70%' },
                 objectFit: 'contain',
-                mb: 2.5,
+                mb: { xs: 2, sm: 2.5 },
               }}
             />
             <Typography 
@@ -83,6 +84,8 @@ const Login: React.FC = () => {
                 mb: 0.5, 
                 fontWeight: 500,
                 color: '#212121',
+                fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' },
+                textAlign: 'center',
               }}
             >
               KaiZenith Spa
@@ -91,9 +94,10 @@ const Login: React.FC = () => {
               component="h2" 
               variant="body2" 
               sx={{ 
-                mb: 3, 
+                mb: { xs: 2.5, sm: 3 }, 
                 color: '#546e7a',
-                fontSize: '0.813rem',
+                fontSize: { xs: '0.75rem', sm: '0.813rem' },
+                textAlign: 'center',
               }}
             >
               Sistema ERP Financiero
@@ -127,7 +131,10 @@ const Login: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 sx={{
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
+                  '& .MuiInputBase-root': {
+                    fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                  },
                 }}
               />
               <TextField
@@ -143,7 +150,10 @@ const Login: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 sx={{
-                  mb: 3,
+                  mb: { xs: 2.5, sm: 3 },
+                  '& .MuiInputBase-root': {
+                    fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                  },
                 }}
               />
               <Button
@@ -152,8 +162,8 @@ const Login: React.FC = () => {
                 variant="contained"
                 sx={{ 
                   mb: 2, 
-                  py: 1.25,
-                  fontSize: '0.875rem',
+                  py: { xs: 1.125, sm: 1.25 },
+                  fontSize: { xs: '0.813rem', sm: '0.875rem' },
                   fontWeight: 500,
                   backgroundColor: '#0d47a1',
                   '&:hover': {
@@ -166,22 +176,22 @@ const Login: React.FC = () => {
               </Button>
             </Box>
 
-            <Box sx={{ mt: 3, textAlign: 'center', width: '100%' }}>
-              <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: 'block', fontSize: '0.75rem' }}>
+            <Box sx={{ mt: { xs: 2.5, sm: 3 }, textAlign: 'center', width: '100%' }}>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: 'block', fontSize: { xs: '0.688rem', sm: '0.75rem' } }}>
                 Credenciales de prueba
               </Typography>
               <Box 
                 sx={{ 
                   backgroundColor: '#fafafa',
                   borderRadius: 1,
-                  p: 1.5,
+                  p: { xs: 1.25, sm: 1.5 },
                   border: '1px solid #e0e0e0',
                 }}
               >
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontSize: '0.75rem' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontSize: { xs: '0.688rem', sm: '0.75rem' }, wordBreak: 'break-word' }}>
                   <strong>Email:</strong> admin@patolin.cl
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.688rem', sm: '0.75rem' } }}>
                   <strong>Contraseña:</strong> password
                 </Typography>
               </Box>

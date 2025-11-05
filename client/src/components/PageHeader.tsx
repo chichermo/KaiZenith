@@ -14,9 +14,9 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: subtitle ? 2 : 0 }}>
-        <Box>
+    <Box sx={{ mb: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, mb: subtitle ? { xs: 1.5, sm: 2 } : 0, gap: { xs: 2, sm: 0 } }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
             variant="h4"
             component="h1"
@@ -24,13 +24,14 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
               fontWeight: 500,
               mb: subtitle ? 0.5 : 0,
               color: '#212121',
-              fontSize: '1.75rem',
+              fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+              wordBreak: 'break-word',
             }}
           >
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="body1" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}>
               {subtitle}
             </Typography>
           )}
@@ -42,10 +43,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
             onClick={action.onClick}
             sx={{
               borderRadius: 1,
-              px: 2.5,
-              py: 1,
-              fontSize: '0.875rem',
+              px: { xs: 2, sm: 2.5 },
+              py: { xs: 0.875, sm: 1 },
+              fontSize: { xs: '0.813rem', sm: '0.875rem' },
               fontWeight: 500,
+              whiteSpace: 'nowrap',
             }}
           >
             {action.label}
