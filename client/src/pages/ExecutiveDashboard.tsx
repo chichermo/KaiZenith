@@ -15,94 +15,61 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
   AttachMoney as MoneyIcon,
   Assessment as AssessmentIcon,
-  Construction as ProjectIcon,
+  People as PeopleIcon,
+  Receipt as ReceiptIcon,
   Inventory as InventoryIcon,
-  Notifications as NotificationsIcon,
-  Warning as WarningIcon,
+  AccountBalance as AccountBalanceIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
-interface KPIData {
-  current: number;
-  previous: number;
-  change: number;
-  trend: 'up' | 'down';
-}
-
-interface ExecutiveDashboard {
-  kpis: {
-    total_revenue: KPIData;
-    total_expenses: KPIData;
-    net_profit: KPIData;
-    profit_margin: KPIData;
-    active_projects: KPIData;
-    pending_invoices: KPIData;
-    inventory_value: KPIData;
-    cash_flow: KPIData;
+interface DashboardData {
+  clients: {
+    total: number;
+    active: number;
+    potential: number;
   };
-  sales_analysis: {
-    by_month: Array<{ month: string; revenue: number; invoices: number }>;
-    by_category: Array<{ category: string; revenue: number; percentage: number }>;
-    top_clients: Array<{ name: string; revenue: number; invoices: number }>;
+  invoices: {
+    total: number;
+    paid: number;
+    pending: number;
+    overdue: number;
+    total_value: number;
+    paid_value: number;
+    pending_value: number;
   };
-  profitability_analysis: {
-    average_margin: number;
-    projects_over_budget: number;
-    projects_under_budget: number;
-    top_profitable_projects: Array<{
-      code: string;
-      name: string;
-      margin: number;
-      revenue: number;
-    }>;
+  purchaseInvoices: {
+    total: number;
+    paid: number;
+    pending: number;
+    total_value: number;
   };
-  financial_summary: {
-    accounts_receivable: {
-      current: number;
-      overdue: number;
-      overdue_percentage: number;
-    };
-    accounts_payable: {
-      current: number;
-      due_soon: number;
-      due_soon_percentage: number;
-    };
-    cash_position: {
-      bank_accounts: number;
-      cash: number;
-      total: number;
-    };
+  accounting: {
+    total_revenue: number;
+    total_expenses: number;
+    net_profit: number;
+    profit_margin: number;
   };
-  alerts: Array<{
-    type: string;
-    message: string;
-    priority: string;
-  }>;
 }
 
 const KPICard: React.FC<{
   title: string;
-  data: KPIData;
-  format?: (value: number) => string;
+  value: string | number;
   icon: React.ReactNode;
   color?: string;
-}> = ({ title, data, format = (v) => v.toLocaleString('es-CL'), icon, color = 'primary.main' }) => {
-  const isPositive = data.trend === 'up' && data.change > 0;
-  const changeColor = isPositive ? 'success.main' : 'error.main';
+  trend?: { value: number; isPositive: boolean };
+}> = ({ title, value, icon, color = 'primary.main', trend }) => {
+  const isPositive = trend?.isPositive ?? true;
+  const trendColor = isPositive ? 'success.main' : 'error.main';
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: '100%', border: '1px solid #e8eaed' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Box
@@ -115,21 +82,20 @@ const KPICard: React.FC<{
           >
             {icon}
           </Box>
-          <Chip
-            label={`${data.change > 0 ? '+' : ''}${data.change.toFixed(1)}%`}
-            color={isPositive ? 'success' : 'error'}
-            size="small"
-            icon={isPositive ? <TrendingUpIcon /> : <TrendingDownIcon />}
-          />
+          {trend && (
+            <Chip
+              label={`${trend.isPositive ? '+' : ''}${trend.value.toFixed(1)}%`}
+              color={isPositive ? 'success' : 'error'}
+              size="small"
+              icon={isPositive ? <TrendingUpIcon /> : <TrendingDownIcon />}
+            />
+          )}
         </Box>
-        <Typography variant="h6" color="text.secondary" gutterBottom>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
           {title}
         </Typography>
-        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
-          {format(data.current)}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Anterior: {format(data.previous)}
+        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+          {value}
         </Typography>
       </CardContent>
     </Card>
@@ -138,37 +104,113 @@ const KPICard: React.FC<{
 
 const ExecutiveDashboard: React.FC = () => {
   const { token } = useAuth();
-  const [data, setData] = useState<ExecutiveDashboard | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDashboard();
-  }, [dateFrom, dateTo]);
+  }, []);
 
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (dateFrom) params.append('date_from', dateFrom);
-      if (dateTo) params.append('date_to', dateTo);
+      setError(null);
 
-      const response = await fetch(`http://localhost:5000/api/dashboard/executive?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // Obtener datos de múltiples endpoints
+      const [clientsRes, invoicesRes, purchaseInvoicesRes, accountingRes] = await Promise.allSettled([
+        axios.get('/clients?limit=100'),
+        axios.get('/invoices?limit=100'),
+        axios.get('/purchase-invoices?limit=100'),
+        axios.get('/accounting/balance-sheet'),
+      ]);
 
-      if (response.ok) {
-        const result = await response.json();
-        setData(result.data);
-      } else {
-        console.error('Error fetching dashboard');
+      // Procesar clientes
+      let clients = { total: 0, active: 0, potential: 0 };
+      if (clientsRes.status === 'fulfilled' && clientsRes.value.data.success) {
+        const clientsData = clientsRes.value.data.data;
+        clients = {
+          total: clientsRes.value.data.pagination?.total || clientsData.length,
+          active: clientsData.filter((c: any) => c.status === 'active').length,
+          potential: clientsData.filter((c: any) => c.status === 'potential').length,
+        };
       }
-    } catch (error) {
+
+      // Procesar facturas de venta
+      let invoices = {
+        total: 0,
+        paid: 0,
+        pending: 0,
+        overdue: 0,
+        total_value: 0,
+        paid_value: 0,
+        pending_value: 0,
+      };
+      if (invoicesRes.status === 'fulfilled' && invoicesRes.value.data.success) {
+        const invoicesData = invoicesRes.value.data.data;
+        const today = new Date();
+        invoices = {
+          total: invoicesRes.value.data.pagination?.total || invoicesData.length,
+          paid: invoicesData.filter((i: any) => i.status === 'paid').length,
+          pending: invoicesData.filter((i: any) => i.status === 'sent' || i.status === 'pending').length,
+          overdue: invoicesData.filter((i: any) => {
+            const dueDate = new Date(i.due_date);
+            return (i.status === 'sent' || i.status === 'pending') && dueDate < today;
+          }).length,
+          total_value: invoicesData.reduce((sum: number, i: any) => sum + (i.total || 0), 0),
+          paid_value: invoicesData
+            .filter((i: any) => i.status === 'paid')
+            .reduce((sum: number, i: any) => sum + (i.total || 0), 0),
+          pending_value: invoicesData
+            .filter((i: any) => i.status === 'sent' || i.status === 'pending')
+            .reduce((sum: number, i: any) => sum + (i.total || 0), 0),
+        };
+      }
+
+      // Procesar facturas de compra
+      let purchaseInvoices = { total: 0, paid: 0, pending: 0, total_value: 0 };
+      if (purchaseInvoicesRes.status === 'fulfilled' && purchaseInvoicesRes.value.data.success) {
+        const purchaseData = purchaseInvoicesRes.value.data.data;
+        purchaseInvoices = {
+          total: purchaseInvoicesRes.value.data.pagination?.total || purchaseData.length,
+          paid: purchaseData.filter((i: any) => i.status === 'paid').length,
+          pending: purchaseData.filter((i: any) => i.status === 'pending' || i.status === 'approved').length,
+          total_value: purchaseData.reduce((sum: number, i: any) => sum + (i.total || 0), 0),
+        };
+      }
+
+      // Procesar contabilidad
+      let accounting = {
+        total_revenue: invoices.paid_value,
+        total_expenses: purchaseInvoices.total_value,
+        net_profit: 0,
+        profit_margin: 0,
+      };
+      if (accountingRes.status === 'fulfilled' && accountingRes.value.data.success) {
+        const balanceSheet = accountingRes.value.data.data;
+        // Calcular ingresos desde el balance sheet (cuentas de ingresos)
+        const revenueAccounts = Object.values(balanceSheet.equity || {}).reduce(
+          (sum: number, acc: any) => sum + (acc.balance || 0),
+          0
+        );
+        accounting.total_revenue = revenueAccounts || invoices.paid_value;
+      }
+
+      accounting.net_profit = accounting.total_revenue - accounting.total_expenses;
+      accounting.profit_margin =
+        accounting.total_revenue > 0
+          ? (accounting.net_profit / accounting.total_revenue) * 100
+          : 0;
+
+      setData({
+        clients,
+        invoices,
+        purchaseInvoices,
+        accounting,
+      });
+    } catch (error: any) {
       console.error('Error fetching dashboard:', error);
+      setError('Error cargando datos del dashboard');
     } finally {
       setLoading(false);
     }
@@ -185,74 +227,28 @@ const ExecutiveDashboard: React.FC = () => {
     );
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">Error cargando datos del dashboard</Alert>
+        <Alert severity="error">
+          {error || 'Error cargando datos del dashboard. Asegúrate de que el servidor esté corriendo.'}
+        </Alert>
       </Box>
     );
   }
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Dashboard Ejecutivo
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Desde</InputLabel>
-            <Select
-              value={dateFrom}
-              label="Desde"
-              onChange={(e) => setDateFrom(e.target.value)}
-            >
-              <MenuItem value="">Todo</MenuItem>
-              <MenuItem value={new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]}>
-                Año actual
-              </MenuItem>
-              <MenuItem value={new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().split('T')[0]}>
-                Últimos 3 meses
-              </MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Hasta</InputLabel>
-            <Select
-              value={dateTo}
-              label="Hasta"
-              onChange={(e) => setDateTo(e.target.value)}
-            >
-              <MenuItem value="">Hoy</MenuItem>
-              <MenuItem value={new Date().toISOString().split('T')[0]}>Hoy</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-
-      {/* Alertas */}
-      {data.alerts && data.alerts.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          {data.alerts.map((alert, index) => (
-            <Alert
-              key={index}
-              severity={alert.type === 'warning' ? 'warning' : alert.type === 'error' ? 'error' : 'info'}
-              sx={{ mb: 1 }}
-              icon={<WarningIcon />}
-            >
-              {alert.message}
-            </Alert>
-          ))}
-        </Box>
-      )}
+      <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 3 }}>
+        Dashboard Ejecutivo
+      </Typography>
 
       {/* KPIs Principales */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
             title="Ingresos Totales"
-            data={data.kpis.total_revenue}
-            format={formatCurrency}
+            value={formatCurrency(data.accounting.total_revenue)}
             icon={<MoneyIcon />}
             color="success.main"
           />
@@ -260,8 +256,7 @@ const ExecutiveDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
             title="Gastos Totales"
-            data={data.kpis.total_expenses}
-            format={formatCurrency}
+            value={formatCurrency(data.accounting.total_expenses)}
             icon={<MoneyIcon />}
             color="error.main"
           />
@@ -269,212 +264,115 @@ const ExecutiveDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
             title="Utilidad Neta"
-            data={data.kpis.net_profit}
-            format={formatCurrency}
+            value={formatCurrency(data.accounting.net_profit)}
             icon={<TrendingUpIcon />}
-            color="success.main"
+            color={data.accounting.net_profit >= 0 ? 'success.main' : 'error.main'}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
             title="Margen de Utilidad"
-            data={data.kpis.profit_margin}
-            format={(v) => `${v.toFixed(1)}%`}
+            value={`${data.accounting.profit_margin.toFixed(1)}%`}
             icon={<AssessmentIcon />}
             color="primary.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
-            title="Proyectos Activos"
-            data={data.kpis.active_projects}
-            format={(v) => v.toString()}
-            icon={<ProjectIcon />}
+            title="Clientes Activos"
+            value={data.clients.active}
+            icon={<PeopleIcon />}
             color="info.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
             title="Facturas Pendientes"
-            data={data.kpis.pending_invoices}
-            format={(v) => v.toString()}
-            icon={<NotificationsIcon />}
+            value={data.invoices.pending}
+            icon={<ReceiptIcon />}
             color="warning.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
-            title="Valor Inventario"
-            data={data.kpis.inventory_value}
-            format={formatCurrency}
-            icon={<InventoryIcon />}
-            color="info.main"
+            title="Facturas Vencidas"
+            value={data.invoices.overdue}
+            icon={<ReceiptIcon />}
+            color="error.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <KPICard
-            title="Flujo de Caja"
-            data={data.kpis.cash_flow}
-            format={formatCurrency}
-            icon={<MoneyIcon />}
-            color="success.main"
+            title="Por Cobrar"
+            value={formatCurrency(data.invoices.pending_value)}
+            icon={<AccountBalanceIcon />}
+            color="info.main"
           />
         </Grid>
       </Grid>
 
-      <Grid container spacing={3}>
-        {/* Análisis de Ventas */}
+      {/* Resumen Financiero */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Ventas por Mes
+                Resumen de Facturación
               </Typography>
               <TableContainer>
                 <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Mes</TableCell>
-                      <TableCell align="right">Ingresos</TableCell>
-                      <TableCell align="right">Facturas</TableCell>
-                    </TableRow>
-                  </TableHead>
                   <TableBody>
-                    {data.sales_analysis.by_month.map((month, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{month.month}</TableCell>
-                        <TableCell align="right">{formatCurrency(month.revenue)}</TableCell>
-                        <TableCell align="right">{month.invoices}</TableCell>
-                      </TableRow>
-                    ))}
+                    <TableRow>
+                      <TableCell>Total Facturado</TableCell>
+                      <TableCell align="right">{formatCurrency(data.invoices.total_value)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Facturas Pagadas</TableCell>
+                      <TableCell align="right">
+                        {data.invoices.paid} ({formatCurrency(data.invoices.paid_value)})
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Facturas Pendientes</TableCell>
+                      <TableCell align="right">
+                        {data.invoices.pending} ({formatCurrency(data.invoices.pending_value)})
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Facturas Vencidas</TableCell>
+                      <TableCell align="right">{data.invoices.overdue}</TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Ventas por Categoría */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Ventas por Categoría
+                Resumen de Compras
               </Typography>
               <TableContainer>
                 <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Categoría</TableCell>
-                      <TableCell align="right">Ingresos</TableCell>
-                      <TableCell align="right">%</TableCell>
-                    </TableRow>
-                  </TableHead>
                   <TableBody>
-                    {data.sales_analysis.by_category.map((cat, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{cat.category}</TableCell>
-                        <TableCell align="right">{formatCurrency(cat.revenue)}</TableCell>
-                        <TableCell align="right">
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <LinearProgress
-                              variant="determinate"
-                              value={cat.percentage}
-                              sx={{ width: 60, mr: 1 }}
-                            />
-                            {cat.percentage}%
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Resumen Financiero */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Resumen Financiero
-              </Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Cuentas por Cobrar
-                </Typography>
-                <Typography variant="h6">{formatCurrency(data.financial_summary.accounts_receivable.current)}</Typography>
-                <Typography variant="body2" color="error">
-                  Vencidas: {formatCurrency(data.financial_summary.accounts_receivable.overdue)} ({data.financial_summary.accounts_receivable.overdue_percentage.toFixed(1)}%)
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Cuentas por Pagar
-                </Typography>
-                <Typography variant="h6">{formatCurrency(data.financial_summary.accounts_payable.current)}</Typography>
-                <Typography variant="body2" color="warning.main">
-                  Por vencer: {formatCurrency(data.financial_summary.accounts_payable.due_soon)} ({data.financial_summary.accounts_payable.due_soon_percentage.toFixed(1)}%)
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Posición de Caja
-                </Typography>
-                <Typography variant="h6" color="success.main">
-                  {formatCurrency(data.financial_summary.cash_position.total)}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Rentabilidad de Proyectos */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Rentabilidad de Proyectos
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                Margen Promedio: <strong>{data.profitability_analysis.average_margin.toFixed(1)}%</strong>
-              </Typography>
-              <Box sx={{ mb: 2 }}>
-                <Chip
-                  label={`${data.profitability_analysis.projects_over_budget} sobre presupuesto`}
-                  color="error"
-                  sx={{ mr: 1 }}
-                />
-                <Chip
-                  label={`${data.profitability_analysis.projects_under_budget} bajo presupuesto`}
-                  color="success"
-                />
-              </Box>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
                     <TableRow>
-                      <TableCell>Proyecto</TableCell>
-                      <TableCell align="right">Margen</TableCell>
-                      <TableCell align="right">Ingresos</TableCell>
+                      <TableCell>Total Facturas Compra</TableCell>
+                      <TableCell align="right">{data.purchaseInvoices.total}</TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data.profitability_analysis.top_profitable_projects.map((project, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{project.name}</TableCell>
-                        <TableCell align="right">
-                          <Chip
-                            label={`${project.margin.toFixed(1)}%`}
-                            color={project.margin > 30 ? 'success' : 'warning'}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell align="right">{formatCurrency(project.revenue)}</TableCell>
-                      </TableRow>
-                    ))}
+                    <TableRow>
+                      <TableCell>Total Valor</TableCell>
+                      <TableCell align="right">{formatCurrency(data.purchaseInvoices.total_value)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Pagadas</TableCell>
+                      <TableCell align="right">{data.purchaseInvoices.paid}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Pendientes</TableCell>
+                      <TableCell align="right">{data.purchaseInvoices.pending}</TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -482,10 +380,49 @@ const ExecutiveDashboard: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Resumen de Clientes */}
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Resumen de Clientes
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                <Typography variant="h4" color="primary">
+                  {data.clients.total}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Clientes
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#e8f5e9', borderRadius: 1 }}>
+                <Typography variant="h4" color="success.main">
+                  {data.clients.active}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Clientes Activos
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#fff3e0', borderRadius: 1 }}>
+                <Typography variant="h4" color="warning.main">
+                  {data.clients.potential}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Clientes Potenciales
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </Box>
   );
 };
 
 export default ExecutiveDashboard;
-
-

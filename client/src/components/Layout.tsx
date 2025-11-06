@@ -26,6 +26,7 @@ import {
   Description as DescriptionIcon,
   Store as StoreIcon,
   AccountBalance as AccountBalanceIcon,
+  AccountTree as AccountTreeIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   AccountCircle as AccountCircleIcon,
@@ -79,6 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Clientes', icon: <PeopleIcon />, path: '/clients' },
     { text: 'Facturas', icon: <ReceiptIcon />, path: '/invoices' },
     { text: 'Órdenes de Compra', icon: <ShoppingCartIcon />, path: '/purchase-orders' },
+    { text: 'Facturas de Compra', icon: <ReceiptIcon />, path: '/purchase-invoices' },
     { text: 'Cotizaciones', icon: <DescriptionIcon />, path: '/quotations' },
     { text: 'Proveedores', icon: <StoreIcon />, path: '/suppliers' },
     { text: 'Workflow y Aprobaciones', icon: <WorkflowIcon />, path: '/workflow' },
@@ -87,6 +89,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Integración IA Proveedores', icon: <ApiIcon />, path: '/supplier-integration' },
     { text: 'Integraciones SII/Bancos', icon: <CloudSyncIcon />, path: '/integrations' },
     { text: 'Contabilidad', icon: <AccountBalanceIcon />, path: '/accounting' },
+    { text: 'Plan de Cuentas', icon: <AccountTreeIcon />, path: '/chart-of-accounts' },
     { text: 'Configuración', icon: <SettingsIcon />, path: '/settings' },
   ];
 

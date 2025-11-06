@@ -51,22 +51,70 @@ const NotificationBell: React.FC = () => {
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   useEffect(() => {
-    if (token) {
-      fetchNotifications();
-      // Actualizar notificaciones cada 30 segundos
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
+    if (!token) {
+      return;
     }
+    
+    let isMounted = true;
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    const fetchNotificationsSafe = async () => {
+      if (!token || !isMounted) {
+        return;
+      }
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch('http://localhost:5000/api/notifications?limit=10', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok && isMounted) {
+          const data = await response.json();
+          setNotifications(data.data || []);
+        }
+      } catch (error: any) {
+        // Silenciar errores de conexión
+        if (error.name !== 'AbortError' && error.name !== 'TypeError') {
+          console.error('Error fetching notifications:', error);
+        }
+      }
+    };
+    
+    // Cargar inmediatamente
+    fetchNotificationsSafe();
+    
+    // Actualizar cada 30 segundos solo si el componente sigue montado
+    intervalId = setInterval(() => {
+      if (isMounted && token) {
+        fetchNotificationsSafe();
+      }
+    }, 30000);
+    
+    return () => {
+      isMounted = false;
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [token]);
 
   const fetchNotifications = async () => {
     if (!token) {
-      return; // No hacer petición si no hay token
+      return;
     }
     
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
       const response = await fetch('http://localhost:5000/api/notifications?limit=10', {
         headers: {
@@ -83,13 +131,8 @@ const NotificationBell: React.FC = () => {
         setNotifications(data.data || []);
       }
     } catch (error: any) {
-      // Silenciar errores de conexión (servidor no disponible)
-      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-        // Servidor no disponible, mantener notificaciones vacías silenciosamente
-        return;
-      }
-      // Solo mostrar otros errores
-      if (error.name !== 'AbortError') {
+      // Silenciar errores de conexión
+      if (error.name !== 'AbortError' && error.name !== 'TypeError') {
         console.error('Error fetching notifications:', error);
       }
     }

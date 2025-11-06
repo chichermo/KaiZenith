@@ -23,7 +23,8 @@ axios.defaults.baseURL = 'http://localhost:5000/api';
 
 // Interceptor para agregar el token a las peticiones
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Usar token temporal para pruebas cuando el login está desactivado
+  const token = localStorage.getItem('token') || 'test-token-temporary';
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

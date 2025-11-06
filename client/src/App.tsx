@@ -1,8 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -19,6 +20,8 @@ import IntegrationsManagement from './pages/IntegrationsManagement';
 import Workflow from './pages/Workflow';
 import Inventory from './pages/Inventory';
 import Projects from './pages/Projects';
+import PurchaseInvoices from './pages/PurchaseInvoices';
+import ChartOfAccounts from './pages/ChartOfAccounts';
 
 // Componente para rutas protegidas (DESACTIVADO TEMPORALMENTE)
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -39,8 +42,35 @@ const AppContent: React.FC = () => {
   // Mostrar loading mientras se inicializa el usuario de prueba
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div>Cargando...</div>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        flexDirection: 'column',
+        gap: 2
+      }}>
+        <Typography variant="h6">Cargando aplicación...</Typography>
+        <Box sx={{ width: 200 }}>
+          <Box sx={{ 
+            width: '100%', 
+            height: 4, 
+            bgcolor: '#e0e0e0', 
+            borderRadius: 2,
+            overflow: 'hidden'
+          }}>
+            <Box sx={{ 
+              width: '30%', 
+              height: '100%', 
+              bgcolor: 'primary.main',
+              animation: 'loading 1.5s ease-in-out infinite',
+              '@keyframes loading': {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(400%)' }
+              }
+            }} />
+          </Box>
+        </Box>
       </Box>
     );
   }
@@ -64,6 +94,8 @@ const AppContent: React.FC = () => {
         <Route path="/workflow" element={<Workflow />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
+        <Route path="/chart-of-accounts" element={<ChartOfAccounts />} />
         {/* Ruta de login comentada pero disponible para reactivar más tarde */}
         {/* <Route path="/login" element={<Login />} /> */}
         <Route path="*" element={<Navigate to="/dashboard" />} />
@@ -74,11 +106,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <AppContent />
-      </Box>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <AppContent />
+        </Box>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

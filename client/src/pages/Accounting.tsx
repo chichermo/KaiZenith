@@ -491,9 +491,9 @@ const Accounting: React.FC = () => {
                   label="Cuenta"
                 >
                   <MenuItem value="">Todas</MenuItem>
-                  {Object.entries(chartOfAccounts).map(([code, name]) => (
+                  {Object.entries(chartOfAccounts || {}).map(([code, name]) => (
                     <MenuItem key={code} value={code}>
-                      {code} - {name}
+                      {code} - {String(name || '')}
                     </MenuItem>
                   ))}
                 </Select>
@@ -810,9 +810,9 @@ const Accounting: React.FC = () => {
                   label="Cuenta"
                 >
                   <MenuItem value="">Todas las cuentas</MenuItem>
-                  {Object.entries(chartOfAccounts).map(([code, name]) => (
+                  {Object.entries(chartOfAccounts || {}).map(([code, name]) => (
                     <MenuItem key={code} value={code}>
-                      {code} - {name}
+                      {code} - {String(name || '')}
                     </MenuItem>
                   ))}
                 </Select>
@@ -971,9 +971,9 @@ const Accounting: React.FC = () => {
                             onChange={(e) => updateEntryLine(index, 'account', e.target.value)}
                             label="Cuenta"
                           >
-                            {Object.entries(chartOfAccounts).map(([code, name]) => (
+                            {Object.entries(chartOfAccounts || {}).map(([code, name]) => (
                               <MenuItem key={code} value={code}>
-                                {code} - {name}
+                                {code} - {String(name || '')}
                               </MenuItem>
                             ))}
                           </Select>
