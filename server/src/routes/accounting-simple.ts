@@ -10,6 +10,7 @@ import {
   generateSupplierPaymentAccountingEntry,
   generateInventoryMovementAccountingEntry,
   generateExpenseAccountingEntry,
+  generatePurchaseInvoiceAccountingEntry,
   AccountingEntryExtended
 } from '../utils/accounting-auto';
 
@@ -18,44 +19,82 @@ const router = express.Router();
 // Tipo local para asientos contables (estructura diferente al tipo AccountingEntry en types)
 type AccountingEntryLocal = AccountingEntryExtended;
 
-// Plan de cuentas según normas chilenas
-const CHART_OF_ACCOUNTS = {
-  '1101': 'Caja',
-  '1102': 'Banco Cuenta Corriente',
-  '1103': 'Banco Cuenta de Ahorro',
-  '1201': 'Cuentas por Cobrar Clientes',
-  '1202': 'Documentos por Cobrar',
-  '1301': 'Mercaderías',
-  '1302': 'Materiales',
-  '1303': 'Productos en Proceso',
-  '1304': 'Productos Terminados',
-  '1401': 'Muebles y Útiles',
-  '1402': 'Equipos de Computación',
-  '1403': 'Maquinarias',
-  '1404': 'Vehículos',
-  '1501': 'Depreciación Acumulada Muebles',
-  '1502': 'Depreciación Acumulada Equipos',
-  '1503': 'Depreciación Acumulada Maquinarias',
-  '1504': 'Depreciación Acumulada Vehículos',
-  '2101': 'Cuentas por Pagar Proveedores',
-  '2102': 'Documentos por Pagar',
-  '2103': 'Remuneraciones por Pagar',
-  '2104': 'Cotizaciones Previsionales por Pagar',
-  '2105': 'IVA Crédito Fiscal',
-  '2106': 'Retenciones por Pagar',
-  '3101': 'Capital',
-  '3102': 'Reservas',
-  '3201': 'Utilidades del Ejercicio',
-  '3202': 'Pérdidas del Ejercicio',
-  '4101': 'Ventas de Servicios',
-  '4102': 'Ventas de Productos',
-  '5101': 'Costo de Ventas Servicios',
-  '5102': 'Costo de Ventas Productos',
-  '6101': 'Gastos de Administración',
-  '6102': 'Gastos de Ventas',
-  '6103': 'Gastos Financieros',
-  '7101': 'Otros Ingresos',
-  '7102': 'Ingresos Financieros'
+// Interfaz para plan de cuentas editable
+interface ChartOfAccount {
+  code: string;
+  name: string;
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  category: 'current' | 'fixed' | 'long_term' | 'other';
+  parent_code?: string; // Para estructura jerárquica
+  description?: string;
+  active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+// Plan de cuentas según normas chilenas (ahora editable)
+let CHART_OF_ACCOUNTS: ChartOfAccount[] = [
+  // Activos Corrientes
+  { code: '1101', name: 'Caja', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1102', name: 'Banco Cuenta Corriente', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1103', name: 'Banco Cuenta de Ahorro', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1201', name: 'Cuentas por Cobrar Clientes', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1202', name: 'Documentos por Cobrar', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1301', name: 'Mercaderías', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1302', name: 'Materiales', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1303', name: 'Productos en Proceso', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1304', name: 'Productos Terminados', type: 'asset', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Activos Fijos
+  { code: '1401', name: 'Muebles y Útiles', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1402', name: 'Equipos de Computación', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1403', name: 'Maquinarias', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1404', name: 'Vehículos', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1501', name: 'Depreciación Acumulada Muebles', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1502', name: 'Depreciación Acumulada Equipos', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1503', name: 'Depreciación Acumulada Maquinarias', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '1504', name: 'Depreciación Acumulada Vehículos', type: 'asset', category: 'fixed', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Pasivos Corrientes
+  { code: '2101', name: 'Cuentas por Pagar Proveedores', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '2102', name: 'Documentos por Pagar', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '2103', name: 'Remuneraciones por Pagar', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '2104', name: 'Cotizaciones Previsionales por Pagar', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '2105', name: 'IVA Crédito Fiscal', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '2106', name: 'Retenciones por Pagar', type: 'liability', category: 'current', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Pasivos de Largo Plazo
+  { code: '2201', name: 'Préstamos de Largo Plazo', type: 'liability', category: 'long_term', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Patrimonio
+  { code: '3101', name: 'Capital', type: 'equity', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '3102', name: 'Reservas', type: 'equity', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '3201', name: 'Utilidades del Ejercicio', type: 'equity', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '3202', name: 'Pérdidas del Ejercicio', type: 'equity', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Ingresos
+  { code: '4101', name: 'Ventas de Servicios', type: 'revenue', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '4102', name: 'Ventas de Productos', type: 'revenue', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '7101', name: 'Otros Ingresos', type: 'revenue', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '7102', name: 'Ingresos Financieros', type: 'revenue', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  
+  // Gastos
+  { code: '5101', name: 'Costo de Ventas Servicios', type: 'expense', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '5102', name: 'Costo de Ventas Productos', type: 'expense', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '6101', name: 'Gastos de Administración', type: 'expense', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '6102', name: 'Gastos de Ventas', type: 'expense', category: 'other', active: true, created_at: new Date(), updated_at: new Date() },
+  { code: '6103', name: 'Gastos Financieros', type: 'expense', category: 'other', active: true, created_at: new Date(), updated_at: new Date() }
+];
+
+// Función helper para obtener nombre de cuenta por código (compatibilidad)
+const getAccountName = (code: string): string => {
+  const account = CHART_OF_ACCOUNTS.find(acc => acc.code === code);
+  return account ? account.name : 'Cuenta no definida';
+};
+
+// Función helper para validar si una cuenta existe
+const accountExists = (code: string): boolean => {
+  return CHART_OF_ACCOUNTS.some(acc => acc.code === code && acc.active);
 };
 
 // Datos en memoria para contabilidad
@@ -224,10 +263,10 @@ router.post('/entries', authenticateToken, [
 
     // Verificar que las cuentas existan
     for (const entry of entries) {
-      if (!CHART_OF_ACCOUNTS[entry.account as keyof typeof CHART_OF_ACCOUNTS]) {
-        return res.status(400).json({ 
-          success: false, 
-          error: `La cuenta ${entry.account} no existe en el plan de cuentas` 
+      if (!accountExists(entry.account)) {
+        return res.status(400).json({
+          success: false,
+          error: `La cuenta ${entry.account} no existe en el plan de cuentas`
         });
       }
     }
@@ -265,7 +304,7 @@ router.post('/entries', authenticateToken, [
 
 // Función helper para crear asiento contable automático desde transacción
 export const createAccountingEntryFromTransaction = (
-  transactionType: 'invoice' | 'invoice_payment' | 'purchase_order' | 'supplier_payment' | 'inventory' | 'expense',
+  transactionType: 'invoice' | 'invoice_payment' | 'purchase_order' | 'supplier_payment' | 'inventory' | 'expense' | 'purchase_invoice',
   transactionData: any
 ): void => {
   try {
@@ -290,6 +329,9 @@ export const createAccountingEntryFromTransaction = (
       case 'expense':
         entry = generateExpenseAccountingEntry(transactionData);
         break;
+      case 'purchase_invoice':
+        entry = transactionData.entry || generatePurchaseInvoiceAccountingEntry(transactionData.invoice);
+        break;
       default:
         return;
     }
@@ -310,38 +352,41 @@ export const createAccountingEntryFromTransaction = (
 const updateBalanceSheet = (entry: AccountingEntryLocal): void => {
   entry.entries.forEach((e) => {
     const accountCode = e.account;
-    const accountType = accountCode[0]; // Primer dígito determina el tipo
+    const account = CHART_OF_ACCOUNTS.find(acc => acc.code === accountCode);
+    
+    if (!account || !account.active) {
+      return; // Saltar si la cuenta no existe o está inactiva
+    }
 
-    if (accountType === '1') {
+    const accountType = account.type;
+    const accountCategory = account.category;
+
+    if (accountType === 'asset') {
       // Activos
-      if (!balanceSheet.assets.current[accountCode] && !balanceSheet.assets.fixed[accountCode]) {
-        balanceSheet.assets.current[accountCode] = { 
+      const section = accountCategory === 'fixed' ? balanceSheet.assets.fixed : balanceSheet.assets.current;
+      if (!section[accountCode]) {
+        section[accountCode] = { 
           balance: 0, 
-          description: CHART_OF_ACCOUNTS[accountCode as keyof typeof CHART_OF_ACCOUNTS] || '' 
+          description: account.name
         };
       }
-      const account = balanceSheet.assets.current[accountCode] || balanceSheet.assets.fixed[accountCode];
-      if (account) {
-        account.balance += (e.debit - e.credit);
-      }
-    } else if (accountType === '2') {
+      section[accountCode].balance += (e.debit - e.credit);
+    } else if (accountType === 'liability') {
       // Pasivos
-      if (!balanceSheet.liabilities.current[accountCode] && !balanceSheet.liabilities.long_term[accountCode]) {
-        balanceSheet.liabilities.current[accountCode] = { 
+      const section = accountCategory === 'long_term' ? balanceSheet.liabilities.long_term : balanceSheet.liabilities.current;
+      if (!section[accountCode]) {
+        section[accountCode] = { 
           balance: 0, 
-          description: CHART_OF_ACCOUNTS[accountCode as keyof typeof CHART_OF_ACCOUNTS] || '' 
+          description: account.name
         };
       }
-      const account = balanceSheet.liabilities.current[accountCode] || balanceSheet.liabilities.long_term[accountCode];
-      if (account) {
-        account.balance += (e.credit - e.debit);
-      }
-    } else if (accountType === '3') {
+      section[accountCode].balance += (e.credit - e.debit);
+    } else if (accountType === 'equity') {
       // Patrimonio
       if (!balanceSheet.equity[accountCode]) {
         balanceSheet.equity[accountCode] = { 
           balance: 0, 
-          description: CHART_OF_ACCOUNTS[accountCode as keyof typeof CHART_OF_ACCOUNTS] || '' 
+          description: account.name
         };
       }
       balanceSheet.equity[accountCode].balance += (e.credit - e.debit);
@@ -466,14 +511,169 @@ router.get('/general-ledger', authenticateToken, [
 });
 
 // Obtener plan de cuentas
-router.get('/chart-of-accounts', authenticateToken, async (req: express.Request, res: express.Response) => {
+router.get('/chart-of-accounts', authenticateToken, [
+  query('type').optional().isIn(['asset', 'liability', 'equity', 'revenue', 'expense']),
+  query('active_only').optional().isBoolean()
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Parámetros inválidos' });
+    }
+
+    let accounts = [...CHART_OF_ACCOUNTS];
+    
+    // Filtrar por tipo
+    const type = req.query.type as string;
+    if (type) {
+      accounts = accounts.filter(acc => acc.type === type);
+    }
+
+    // Filtrar solo activas
+    const activeOnly = req.query.active_only === 'true';
+    if (activeOnly) {
+      accounts = accounts.filter(acc => acc.active);
+    }
+
+    // Convertir a formato simple para compatibilidad
+    const accountsSimple: { [key: string]: string } = {};
+    accounts.forEach(acc => {
+      accountsSimple[acc.code] = acc.name;
+    });
+
     res.json({
       success: true,
-      data: CHART_OF_ACCOUNTS
+      data: accounts,
+      dataSimple: accountsSimple // Formato antiguo para compatibilidad
     });
   } catch (error) {
     console.error('Error obteniendo plan de cuentas:', error);
+    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
+});
+
+// Crear nueva cuenta en el plan de cuentas
+router.post('/chart-of-accounts', authenticateToken, [
+  body('code').notEmpty().trim().matches(/^\d{4}$/),
+  body('name').notEmpty().trim(),
+  body('type').isIn(['asset', 'liability', 'equity', 'revenue', 'expense']),
+  body('category').isIn(['current', 'fixed', 'long_term', 'other']),
+  body('parent_code').optional().isString(),
+  body('description').optional().isString(),
+  body('active').optional().isBoolean()
+], async (req: express.Request, res: express.Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos', details: errors.array() });
+    }
+
+    const { code, name, type, category, parent_code, description, active } = req.body;
+
+    // Verificar que el código no exista
+    if (CHART_OF_ACCOUNTS.some(acc => acc.code === code)) {
+      return res.status(400).json({ success: false, error: 'El código de cuenta ya existe' });
+    }
+
+    const newAccount: ChartOfAccount = {
+      code,
+      name,
+      type,
+      category,
+      parent_code: parent_code || undefined,
+      description: description || undefined,
+      active: active !== undefined ? active : true,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    CHART_OF_ACCOUNTS.push(newAccount);
+
+    res.status(201).json({
+      success: true,
+      message: 'Cuenta creada exitosamente',
+      data: newAccount
+    });
+  } catch (error) {
+    console.error('Error creando cuenta:', error);
+    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
+});
+
+// Actualizar cuenta del plan de cuentas
+router.patch('/chart-of-accounts/:code', authenticateToken, [
+  body('name').optional().notEmpty().trim(),
+  body('type').optional().isIn(['asset', 'liability', 'equity', 'revenue', 'expense']),
+  body('category').optional().isIn(['current', 'fixed', 'long_term', 'other']),
+  body('parent_code').optional().isString(),
+  body('description').optional().isString(),
+  body('active').optional().isBoolean()
+], async (req: express.Request, res: express.Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos', details: errors.array() });
+    }
+
+    const { code } = req.params;
+    const accountIndex = CHART_OF_ACCOUNTS.findIndex(acc => acc.code === code);
+
+    if (accountIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Cuenta no encontrada' });
+    }
+
+    const updates = req.body;
+    CHART_OF_ACCOUNTS[accountIndex] = {
+      ...CHART_OF_ACCOUNTS[accountIndex],
+      ...updates,
+      updated_at: new Date()
+    };
+
+    res.json({
+      success: true,
+      message: 'Cuenta actualizada exitosamente',
+      data: CHART_OF_ACCOUNTS[accountIndex]
+    });
+  } catch (error) {
+    console.error('Error actualizando cuenta:', error);
+    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
+});
+
+// Eliminar cuenta del plan de cuentas (desactivar)
+router.delete('/chart-of-accounts/:code', authenticateToken, async (req: express.Request, res: express.Response) => {
+  try {
+    const { code } = req.params;
+    const accountIndex = CHART_OF_ACCOUNTS.findIndex(acc => acc.code === code);
+
+    if (accountIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Cuenta no encontrada' });
+    }
+
+    // Verificar si hay asientos contables usando esta cuenta
+    const hasEntries = accountingEntries.some(entry => 
+      entry.entries.some(e => e.account === code)
+    );
+
+    if (hasEntries) {
+      // Solo desactivar si tiene movimientos
+      CHART_OF_ACCOUNTS[accountIndex].active = false;
+      CHART_OF_ACCOUNTS[accountIndex].updated_at = new Date();
+      res.json({
+        success: true,
+        message: 'Cuenta desactivada (tiene movimientos contables)',
+        data: CHART_OF_ACCOUNTS[accountIndex]
+      });
+    } else {
+      // Eliminar si no tiene movimientos
+      CHART_OF_ACCOUNTS.splice(accountIndex, 1);
+      res.json({
+        success: true,
+        message: 'Cuenta eliminada exitosamente'
+      });
+    }
+  } catch (error) {
+    console.error('Error eliminando cuenta:', error);
     res.status(500).json({ success: false, error: 'Error interno del servidor' });
   }
 });

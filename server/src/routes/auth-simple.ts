@@ -81,11 +81,59 @@ let invoices = [
 
 // Middleware para verificar JWT
 export const authenticateToken = (req: any, res: express.Response, next: express.NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  // Obtener el header de autorización
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  let token: string | undefined;
+  
+  if (authHeader) {
+    if (typeof authHeader === 'string') {
+      // Extraer el token después de "Bearer "
+      const parts = authHeader.split(' ');
+      token = parts.length > 1 ? parts[1] : parts[0];
+    } else if (Array.isArray(authHeader) && authHeader.length > 0) {
+      // Si es un array, tomar el primer elemento
+      const headerStr = authHeader[0];
+      const parts = headerStr.split(' ');
+      token = parts.length > 1 ? parts[1] : parts[0];
+    }
+  }
+
+  // Log temporal para depuración (solo las primeras 10 peticiones)
+  const logCount = ((global as any).__auth_log_count || 0);
+  if (logCount < 10) {
+    (global as any).__auth_log_count = logCount + 1;
+    console.log(`\n[AUTH DEBUG ${logCount + 1}] ${req.method} ${req.path}`);
+    console.log(`[AUTH DEBUG] Todos los headers:`, JSON.stringify(req.headers, null, 2));
+    console.log(`[AUTH DEBUG] Header authorization:`, authHeader);
+    console.log(`[AUTH DEBUG] Token extraído:`, token);
+    console.log(`[AUTH DEBUG] Token normalizado:`, token ? token.trim() : 'undefined');
+    console.log(`[AUTH DEBUG] Coincide con test-token-temporary?:`, token?.trim() === 'test-token-temporary');
+  }
 
   if (!token) {
+    if (logCount < 10) {
+      console.log(`[AUTH DEBUG] ❌ No hay token - retornando 401`);
+    }
     return res.status(401).json({ success: false, error: 'Token de acceso requerido' });
+  }
+
+  // Permitir token de prueba cuando el login está desactivado
+  const normalizedToken = token.trim();
+  if (normalizedToken === 'test-token-temporary') {
+    if (logCount < 10) {
+      console.log(`[AUTH DEBUG] ✅ Token temporal aceptado - continuando`);
+    }
+    req.user = {
+      id: 1,
+      email: 'admin@patolin.cl',
+      name: 'Usuario Administrador',
+      role: 'admin'
+    };
+    return next();
+  }
+
+  if (logCount < 10) {
+    console.log(`[AUTH DEBUG] ⚠️ Token no coincide - intentando verificar JWT`);
   }
 
   jwt.verify(token, process.env.JWT_SECRET || 'secret', (err: any, user: any) => {

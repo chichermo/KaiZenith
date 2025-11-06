@@ -45,6 +45,7 @@ import {
   FilterList as FilterIcon,
   Assessment as ReportIcon,
 } from '@mui/icons-material';
+import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
 interface InventoryProduct {
@@ -144,16 +145,9 @@ const Inventory: React.FC = () => {
       if (lowStockOnly) params.append('low_stock', 'true');
       if (searchTerm) params.append('search', searchTerm);
 
-      const response = await fetch(`http://localhost:5000/api/inventory?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data.data || []);
+      const response = await axios.get(`/inventory?${params}`);
+      if (response.data.success) {
+        setProducts(response.data.data || []);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -166,38 +160,23 @@ const Inventory: React.FC = () => {
     if (!token) return;
     
     try {
-      const response = await fetch('http://localhost:5000/api/inventory/movements', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMovements(data.data || []);
-      } else if (response.status === 404) {
-        // Endpoint no disponible aún, usar array vacío
-        setMovements([]);
+      const response = await axios.get('/inventory/movements');
+      // El interceptor maneja los 404 silenciosamente, retornando data: { success: false, data: [] }
+      setMovements(response.data.data || []);
+    } catch (error: any) {
+      // Solo mostrar errores que no sean 404 (el interceptor ya los maneja)
+      if (error.response?.status !== 404) {
+        console.error('Error fetching movements:', error);
       }
-    } catch (error) {
-      console.error('Error fetching movements:', error);
       setMovements([]);
     }
   };
 
   const fetchLowStockAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/inventory/alerts/low-stock', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setLowStockAlerts(data.data || []);
+      const response = await axios.get('/inventory/alerts/low-stock');
+      if (response.data.success) {
+        setLowStockAlerts(response.data.data || []);
       }
     } catch (error) {
       console.error('Error fetching alerts:', error);
@@ -240,32 +219,23 @@ const Inventory: React.FC = () => {
   const handleSaveProduct = async () => {
     try {
       setLoading(true);
-      const url = selectedProduct
-        ? `http://localhost:5000/api/inventory/${selectedProduct.id}`
-        : 'http://localhost:5000/api/inventory';
+      let response;
+      if (selectedProduct) {
+        response = await axios.put(`/inventory/${selectedProduct.id}`, formData);
+      } else {
+        response = await axios.post('/inventory', formData);
+      }
 
-      const method = selectedProduct ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
+      if (response.data.success) {
         setSuccess(`Producto ${selectedProduct ? 'actualizado' : 'creado'} exitosamente`);
         setOpenProductDialog(false);
         fetchProducts();
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al guardar producto');
+        setError(response.data.error || 'Error al guardar producto');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving product:', error);
-      setError('Error al guardar producto');
+      setError(error.response?.data?.error || 'Error al guardar producto');
     } finally {
       setLoading(false);
     }
@@ -285,27 +255,18 @@ const Inventory: React.FC = () => {
   const handleSaveMovement = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/inventory/movements', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(movementFormData)
-      });
-
-      if (response.ok) {
+      const response = await axios.post('/inventory/movements', movementFormData);
+      if (response.data.success) {
         setSuccess('Movimiento registrado exitosamente');
         setOpenMovementDialog(false);
         fetchProducts();
         fetchMovements();
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al registrar movimiento');
+        setError(response.data.error || 'Error al registrar movimiento');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving movement:', error);
-      setError('Error al registrar movimiento');
+      setError(error.response?.data?.error || 'Error al registrar movimiento');
     } finally {
       setLoading(false);
     }

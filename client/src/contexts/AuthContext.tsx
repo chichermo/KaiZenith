@@ -22,19 +22,41 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
 // Interceptor para agregar el token a las peticiones
-axios.interceptors.request.use((config) => {
-  // Usar token temporal para pruebas cuando el login está desactivado
-  const token = localStorage.getItem('token') || 'test-token-temporary';
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Usar un flag para evitar registrar múltiples interceptores
+if (!(axios.interceptors.request as any).__tokenInterceptorRegistered) {
+  axios.interceptors.request.use((config) => {
+    // LOGIN DESACTIVADO: Siempre usar token temporal, ignorar localStorage
+    const token = 'test-token-temporary';
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+  (axios.interceptors.request as any).__tokenInterceptorRegistered = true;
+}
 
 // Interceptor para manejar errores de autenticación (DESACTIVADO TEMPORALMENTE)
+// También suprime errores 404 para endpoints que pueden no estar disponibles aún
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Suprimir errores 404 para endpoints que pueden no estar disponibles aún
+    if (error.response?.status === 404) {
+      const url = error.config?.url || '';
+      // Endpoints que pueden no estar disponibles y no deben mostrar error en consola
+      const silent404Endpoints = ['/inventory/movements'];
+      if (silent404Endpoints.some(endpoint => url.includes(endpoint))) {
+        // Retornar una respuesta simulada para que el código maneje el 404 silenciosamente
+        return Promise.resolve({
+          data: { success: false, data: [] },
+          status: 404,
+          statusText: 'Not Found',
+          headers: {},
+          config: error.config
+        });
+      }
+    }
+    
     // Login desactivado temporalmente - no redirigir al login
     // if (error.response?.status === 401 || error.response?.status === 403) {
     //   localStorage.removeItem('token');
@@ -54,6 +76,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     // LOGIN DESACTIVADO TEMPORALMENTE - Usuario de prueba automático
+    // Limpiar tokens antiguos del localStorage para evitar conflictos
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
     const defaultUser: User = {
       id: 1,
       email: 'admin@patolin.cl',

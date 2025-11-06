@@ -5,7 +5,7 @@ export interface AccountingEntryExtended {
   id: number;
   date: Date | string;
   reference?: string;
-  reference_type?: 'invoice' | 'invoice_payment' | 'purchase_order' | 'supplier_payment' | 'inventory' | 'expense';
+  reference_type?: 'invoice' | 'invoice_payment' | 'purchase_order' | 'supplier_payment' | 'inventory' | 'expense' | 'purchase_invoice';
   reference_id?: number;
   description: string;
   entries: Array<{
@@ -257,6 +257,77 @@ export const generateInventoryMovementAccountingEntry = (
   }
 
   return null;
+};
+
+// Generar asiento contable desde factura de compra
+export const generatePurchaseInvoiceAccountingEntry = (invoice: any): AccountingEntryExtended => {
+  // Determinar cuentas según la categoría y cuenta asignada
+  let inventoryAccount = '1302'; // Materiales por defecto
+  let expenseAccount = '6101'; // Gastos de Administración por defecto
+  
+  if (invoice.category === 'materials') {
+    inventoryAccount = '1302'; // Materiales
+  } else if (invoice.category === 'equipment') {
+    inventoryAccount = invoice.account_code || '1403'; // Maquinarias o la cuenta asignada
+  } else if (invoice.category === 'services' || invoice.category === 'expenses') {
+    expenseAccount = invoice.account_code || '6101'; // Usar cuenta asignada o por defecto
+  }
+
+  // Si es materiales o equipos, va a inventario
+  // Si es servicios o gastos, va directamente a gastos
+  const entries = (invoice.category === 'materials' || invoice.category === 'equipment') ? [
+    {
+      account: inventoryAccount,
+      debit: invoice.subtotal,
+      credit: 0,
+      description: `Factura Compra ${invoice.invoice_number} - ${invoice.supplier_name}`
+    },
+    {
+      account: '2105', // IVA Crédito Fiscal
+      debit: invoice.tax,
+      credit: 0,
+      description: `IVA Crédito Fiscal Factura ${invoice.invoice_number}`
+    },
+    {
+      account: '2101', // Cuentas por Pagar Proveedores
+      debit: 0,
+      credit: invoice.total,
+      description: `Factura Compra ${invoice.invoice_number} - ${invoice.supplier_name}`
+    }
+  ] : [
+    {
+      account: expenseAccount,
+      debit: invoice.subtotal,
+      credit: 0,
+      description: `Factura Compra ${invoice.invoice_number} - ${invoice.supplier_name}`
+    },
+    {
+      account: '2105', // IVA Crédito Fiscal
+      debit: invoice.tax,
+      credit: 0,
+      description: `IVA Crédito Fiscal Factura ${invoice.invoice_number}`
+    },
+    {
+      account: '2101', // Cuentas por Pagar Proveedores
+      debit: 0,
+      credit: invoice.total,
+      description: `Factura Compra ${invoice.invoice_number} - ${invoice.supplier_name}`
+    }
+  ];
+
+  return {
+    id: 0,
+    date: new Date(invoice.date),
+    reference: invoice.invoice_number,
+    reference_type: 'purchase_invoice',
+    reference_id: invoice.id,
+    description: `Factura de Compra ${invoice.invoice_number} - ${invoice.supplier_name}`,
+    entries,
+    total_debit: invoice.total,
+    total_credit: invoice.total,
+    created_at: new Date(),
+    updated_at: new Date()
+  };
 };
 
 // Generar asiento contable desde gasto/expense

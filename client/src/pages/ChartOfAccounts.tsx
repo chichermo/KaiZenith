@@ -52,15 +52,7 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 
-// Configurar axios
-axios.defaults.baseURL = 'http://localhost:5000/api';
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token') || 'test-token-temporary';
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Axios ya está configurado globalmente en AuthContext.tsx
 
 interface ChartOfAccount {
   code: string;
