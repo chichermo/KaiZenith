@@ -241,7 +241,18 @@ router.post('/', authenticateToken, [
       return res.status(400).json({ success: false, error: 'Datos inválidos', details: errors.array() });
     }
 
-    const { client_id, date, valid_until, items, notes } = req.body;
+    const { 
+      client_id, 
+      date, 
+      valid_until, 
+      delivery_date,
+      items, 
+      notes,
+      labor_cost = 0,
+      margin_percentage = 3,
+      payment_terms,
+      partidas
+    } = req.body;
 
     // Verificar que el cliente existe
     const client = clients.find(c => c.id === client_id);
@@ -249,31 +260,37 @@ router.post('/', authenticateToken, [
       return res.status(400).json({ success: false, error: 'Cliente no encontrado' });
     }
 
-    // Calcular totales
-    let subtotal = 0;
+    // Procesar items
     const processedItems = items.map((item: any, index: number) => {
       const total = item.quantity * item.unit_price;
-      subtotal += total;
       return {
         id: quotations.length * 100 + index + 1,
         description: item.description,
         quantity: item.quantity,
         unit_price: item.unit_price,
         total: total,
-        unit: item.unit
+        unit: item.unit,
+        partida: item.partida || null
       };
     });
 
+    // Calcular totales
+    const materialsTotal = processedItems.reduce((sum, item) => sum + item.total, 0);
+    const laborCost = labor_cost || 0;
+    const marginPct = margin_percentage || 3;
+    const subtotal = materialsTotal + laborCost;
+    const marginAmount = subtotal * (marginPct / 100);
+    const netTotal = subtotal + marginAmount;
     const taxRate = 0.19; // IVA 19% en Chile
-    const tax = subtotal * taxRate;
-    const total = subtotal + tax;
+    const tax = netTotal * taxRate;
+    const total = netTotal + tax;
 
     // Generar número de cotización
     const quotationNumber = generateQuotationNumber();
 
     // Crear cotización
     const newQuotation = {
-      id: Math.max(...quotations.map(q => q.id)) + 1,
+      id: Math.max(...quotations.map(q => q.id), 0) + 1,
       quotation_number: quotationNumber,
       client_id,
       client_name: client.name,
@@ -285,12 +302,20 @@ router.post('/', authenticateToken, [
       client_phone: client.phone,
       date,
       valid_until,
+      delivery_date: delivery_date || null,
+      materials_total: materialsTotal,
+      labor_cost: laborCost,
+      margin_percentage: marginPct,
       subtotal,
+      margin_amount: marginAmount,
+      net_total: netTotal,
       tax,
       total,
       status: 'draft',
       notes: notes || '',
+      payment_terms: payment_terms || '',
       items: processedItems,
+      partidas: partidas || null,
       created_at: new Date(),
       updated_at: new Date()
     };
@@ -516,8 +541,31 @@ router.get('/:id/pdf', authenticateToken, async (req: express.Request, res: expr
 
     // Totales
     yPosition += 20;
+    const materialsTotal = quotation.materials_total || quotation.subtotal;
+    doc.text('Total Materiales:', 400, yPosition);
+    doc.text(`$${materialsTotal.toLocaleString('es-CL')}`, 500, yPosition);
+    
+    if (quotation.labor_cost && quotation.labor_cost > 0) {
+      yPosition += 20;
+      doc.text('Mano de Obra:', 400, yPosition);
+      doc.text(`$${quotation.labor_cost.toLocaleString('es-CL')}`, 500, yPosition);
+    }
+    
+    yPosition += 20;
     doc.text('Subtotal:', 400, yPosition);
     doc.text(`$${quotation.subtotal.toLocaleString('es-CL')}`, 500, yPosition);
+    
+    if (quotation.margin_percentage && quotation.margin_percentage > 0) {
+      yPosition += 20;
+      doc.text(`Margen (${quotation.margin_percentage}%):`, 400, yPosition);
+      doc.text(`$${(quotation.margin_amount || 0).toLocaleString('es-CL')}`, 500, yPosition);
+    }
+    
+    if (quotation.net_total) {
+      yPosition += 20;
+      doc.text('Neto:', 400, yPosition);
+      doc.text(`$${quotation.net_total.toLocaleString('es-CL')}`, 500, yPosition);
+    }
     
     yPosition += 20;
     doc.text('IVA (19%):', 400, yPosition);
@@ -534,12 +582,23 @@ router.get('/:id/pdf', authenticateToken, async (req: express.Request, res: expr
       doc.text(quotation.notes, 50, yPosition + 20);
     }
 
+    // Forma de pago
+    if (quotation.payment_terms) {
+      yPosition += 40;
+      doc.fontSize(11).text(`Forma de pago: ${quotation.payment_terms}`, 50, yPosition);
+    }
+
     // Términos y condiciones
-    yPosition += 60;
+    yPosition += 30;
+    const validDays = Math.ceil((new Date(quotation.valid_until).getTime() - new Date(quotation.date).getTime()) / (1000 * 60 * 60 * 24));
     doc.fontSize(12).text('Términos y Condiciones:', 50, yPosition);
-    doc.fontSize(10).text('• Esta cotización es válida por 30 días desde la fecha de emisión', 50, yPosition + 20);
+    doc.fontSize(10).text(`• Esta cotización tiene una vigencia de ${validDays} días.`, 50, yPosition + 20);
     doc.text('• Los precios incluyen IVA', 50, yPosition + 35);
-    doc.text('• El trabajo comenzará una vez aprobada la cotización y recibido el anticipo', 50, yPosition + 50);
+    if (quotation.payment_terms) {
+      doc.text(`• ${quotation.payment_terms}`, 50, yPosition + 50);
+    } else {
+      doc.text('• El trabajo comenzará una vez aprobada la cotización y recibido el anticipo', 50, yPosition + 50);
+    }
     doc.text('• Los materiales pueden variar según disponibilidad', 50, yPosition + 65);
 
     // Pie de página

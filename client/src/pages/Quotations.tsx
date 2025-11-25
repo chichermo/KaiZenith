@@ -46,6 +46,7 @@ import {
   Description as DescriptionIcon,
   Receipt as ReceiptIcon
 } from '@mui/icons-material';
+import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 
 interface QuotationItem {
@@ -55,6 +56,14 @@ interface QuotationItem {
   unit_price: number;
   total: number;
   unit: string;
+  partida?: string; // Nombre de la partida a la que pertenece
+}
+
+interface QuotationPartida {
+  id: number;
+  name: string;
+  items: QuotationItem[];
+  subtotal: number;
 }
 
 interface Quotation {
@@ -70,12 +79,20 @@ interface Quotation {
   client_phone: string;
   date: string;
   valid_until: string;
-  subtotal: number;
-  tax: number;
-  total: number;
+  delivery_date?: string; // Fecha de entrega de la cotización
+  materials_total: number; // Total de materiales
+  labor_cost: number; // Mano de obra
+  margin_percentage: number; // Porcentaje de margen (ej: 3)
+  subtotal: number; // Materiales + Mano de obra
+  margin_amount: number; // Monto del margen
+  net_total: number; // Subtotal + Margen
+  tax: number; // IVA
+  total: number; // Total final
   status: 'draft' | 'sent' | 'approved' | 'rejected' | 'expired';
   notes: string;
+  payment_terms?: string; // Forma de pago (ej: "50% anticipo / 50% contra entrega")
   items: QuotationItem[];
+  partidas?: QuotationPartida[]; // Partidas agrupadas
   created_at: string;
   updated_at: string;
 }
@@ -114,12 +131,28 @@ const Quotations: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // Estados para el formulario de cotización
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    client_id: string;
+    date: string;
+    valid_until: string;
+    delivery_date: string;
+    items: Array<{ id: number; description: string; quantity: number; unit_price: number; unit: string; total: number; partida: string }>;
+    partidas: QuotationPartida[];
+    labor_cost: number;
+    margin_percentage: number;
+    notes: string;
+    payment_terms: string;
+  }>({
     client_id: '',
     date: new Date().toISOString().split('T')[0],
-    valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    items: [{ description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0 }],
-    notes: ''
+    valid_until: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 días por defecto
+    delivery_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    items: [{ id: 0, description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0, partida: '' }],
+    partidas: [{ id: 1, name: '', items: [], subtotal: 0 }],
+    labor_cost: 0,
+    margin_percentage: 3,
+    notes: '',
+    payment_terms: '50% anticipo / 50% contra entrega'
   });
 
   // Datos mock para desarrollo
@@ -137,11 +170,17 @@ const Quotations: React.FC = () => {
       client_phone: '+56 9 1234 5678',
       date: '2024-01-15',
       valid_until: '2024-02-15',
+      materials_total: 800000,
+      labor_cost: 0,
+      margin_percentage: 3,
       subtotal: 800000,
-      tax: 152000,
-      total: 952000,
+      margin_amount: 24000,
+      net_total: 824000,
+      tax: 156560,
+      total: 980560,
       status: 'sent',
       notes: 'Cotización para remodelación de cocina',
+      payment_terms: '',
       items: [
         {
           id: 1,
@@ -184,11 +223,17 @@ const Quotations: React.FC = () => {
       client_phone: '+56 9 8765 4321',
       date: '2024-01-20',
       valid_until: '2024-02-20',
+      materials_total: 300000,
+      labor_cost: 0,
+      margin_percentage: 3,
       subtotal: 300000,
-      tax: 57000,
-      total: 357000,
+      margin_amount: 9000,
+      net_total: 309000,
+      tax: 58710,
+      total: 367710,
       status: 'approved',
       notes: 'Reparación de techo y pintura',
+      payment_terms: '',
       items: [
         {
           id: 4,
@@ -253,16 +298,9 @@ const Quotations: React.FC = () => {
   const fetchQuotations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/quotations', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuotations(data.data || mockQuotations);
+      const response = await axios.get('/quotations');
+      if (response.data.success) {
+        setQuotations(response.data.data || mockQuotations);
       } else {
         setQuotations(mockQuotations);
       }
@@ -276,16 +314,9 @@ const Quotations: React.FC = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/clients', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data.data || mockClients);
+      const response = await axios.get('/clients');
+      if (response.data.success) {
+        setClients(response.data.data || mockClients);
       } else {
         setClients(mockClients);
       }
@@ -300,9 +331,14 @@ const Quotations: React.FC = () => {
     setFormData({
       client_id: '',
       date: new Date().toISOString().split('T')[0],
-      valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      items: [{ description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0 }],
-      notes: ''
+      valid_until: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      delivery_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      items: [{ id: 0, description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0, partida: '' }],
+      partidas: [{ id: 1, name: '', items: [], subtotal: 0 }],
+      labor_cost: 0,
+      margin_percentage: 3,
+      notes: '',
+      payment_terms: '50% anticipo / 50% contra entrega'
     });
     setOpenDialog(true);
   };
@@ -313,8 +349,13 @@ const Quotations: React.FC = () => {
       client_id: quotation.client_id.toString(),
       date: quotation.date,
       valid_until: quotation.valid_until,
-      items: quotation.items,
-      notes: quotation.notes
+      delivery_date: quotation.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      items: quotation.items.map(item => ({ ...item, partida: item.partida || '', id: item.id || 0 })),
+      partidas: quotation.partidas || [{ id: 1, name: '', items: [], subtotal: 0 }],
+      labor_cost: quotation.labor_cost || 0,
+      margin_percentage: quotation.margin_percentage || 3,
+      notes: quotation.notes || '',
+      payment_terms: quotation.payment_terms || '50% anticipo / 50% contra entrega'
     });
     setOpenDialog(true);
   };
@@ -326,114 +367,113 @@ const Quotations: React.FC = () => {
 
   const handleSaveQuotation = async () => {
     try {
+      const filteredItems = formData.items.filter(item => item.description.trim() !== '');
+      const totals = calculateTotals(filteredItems, formData.labor_cost, formData.margin_percentage);
+      
       const quotationData = {
         ...formData,
         client_id: parseInt(formData.client_id),
-        items: formData.items.filter(item => item.description.trim() !== '')
+        items: filteredItems,
+        materials_total: totals.materialsTotal,
+        labor_cost: formData.labor_cost,
+        margin_percentage: formData.margin_percentage,
+        subtotal: totals.subtotal,
+        margin_amount: totals.marginAmount,
+        net_total: totals.netTotal,
+        tax: totals.tax,
+        total: totals.total
       };
 
-      const response = await fetch('http://localhost:5000/api/quotations', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(quotationData)
-      });
-
-      if (response.ok) {
+      const response = await axios.post('/quotations', quotationData);
+      if (response.data.success) {
         setSuccess('Cotización guardada exitosamente');
         setOpenDialog(false);
         fetchQuotations();
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al guardar la cotización');
+        setError(response.data.error || 'Error al guardar la cotización');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving quotation:', error);
-      setError('Error al guardar la cotización');
+      setError(error.response?.data?.error || 'Error al guardar la cotización');
     }
   };
 
   const handleUpdateStatus = async (quotationId: number, status: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/quotations/${quotationId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status })
-      });
-
-      if (response.ok) {
+      const response = await axios.patch(`/quotations/${quotationId}/status`, { status });
+      if (response.data.success) {
         setSuccess('Estado actualizado exitosamente');
         fetchQuotations();
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al actualizar estado');
+        setError(response.data.error || 'Error al actualizar estado');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating status:', error);
-      setError('Error al actualizar estado');
+      setError(error.response?.data?.error || 'Error al actualizar estado');
     }
   };
 
   const handleConvertToInvoice = async (quotationId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/quotations/${quotationId}/convert-to-invoice`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
+      const response = await axios.post(`/quotations/${quotationId}/convert-to-invoice`);
+      if (response.data.success) {
         setSuccess('Cotización convertida a factura exitosamente');
         fetchQuotations();
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al convertir cotización');
+        setError(response.data.error || 'Error al convertir cotización');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error converting quotation:', error);
-      setError('Error al convertir cotización');
+      setError(error.response?.data?.error || 'Error al convertir cotización');
     }
   };
 
   const handleDownloadPDF = async (quotationId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/quotations/${quotationId}/pdf`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await axios.get(`/quotations/${quotationId}/pdf`, {
+        responseType: 'blob'
       });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `cotizacion-${quotationId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        setSuccess('PDF descargado exitosamente');
-      } else {
-        setError('Error al descargar PDF');
-      }
-    } catch (error) {
+      
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cotizacion-${quotationId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      setSuccess('PDF descargado exitosamente');
+    } catch (error: any) {
       console.error('Error downloading PDF:', error);
-      setError('Error al descargar PDF');
+      setError(error.response?.data?.error || 'Error al descargar PDF');
     }
   };
 
+  // Calcular totales basados en materiales, mano de obra y margen
+  const calculateTotals = (items: Array<QuotationItem | { description: string; quantity: number; unit_price: number; unit: string; total: number; partida?: string; id?: number }>, laborCost: number, marginPercentage: number) => {
+    const materialsTotal = items.reduce((sum, item) => sum + (item.total || 0), 0);
+    const subtotal = materialsTotal + laborCost;
+    const marginAmount = subtotal * (marginPercentage / 100);
+    const netTotal = subtotal + marginAmount;
+    const tax = netTotal * 0.19; // IVA 19%
+    const total = netTotal + tax;
+    
+    return {
+      materialsTotal,
+      subtotal,
+      marginAmount,
+      netTotal,
+      tax,
+      total
+    };
+  };
+
   const addItem = () => {
+    const newId = Math.max(...formData.items.map(i => i.id), 0) + 1;
     setFormData({
       ...formData,
-      items: [...formData.items, { description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0 }]
+      items: [...formData.items, { id: newId, description: '', quantity: 1, unit_price: 0, unit: 'unidades', total: 0, partida: '' }]
     });
   };
 
@@ -449,6 +489,26 @@ const Quotations: React.FC = () => {
       newItems[index].total = newItems[index].quantity * newItems[index].unit_price;
     }
     setFormData({ ...formData, items: newItems });
+  };
+
+  const addPartida = () => {
+    const newPartidaId = Math.max(...formData.partidas.map(p => p.id), 0) + 1;
+    setFormData({
+      ...formData,
+      partidas: [...formData.partidas, { id: newPartidaId, name: '', items: [], subtotal: 0 }]
+    });
+  };
+
+  const removePartida = (partidaId: number) => {
+    const newPartidas = formData.partidas.filter(p => p.id !== partidaId);
+    setFormData({ ...formData, partidas: newPartidas });
+  };
+
+  const updatePartida = (partidaId: number, field: string, value: any) => {
+    const newPartidas = formData.partidas.map(p => 
+      p.id === partidaId ? { ...p, [field]: value } : p
+    );
+    setFormData({ ...formData, partidas: newPartidas });
   };
 
   const getStatusColor = (status: string) => {
@@ -803,6 +863,16 @@ const Quotations: React.FC = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="Fecha Entrega Cot."
+                type="date"
+                value={formData.delivery_date}
+                onChange={(e) => setFormData({ ...formData, delivery_date: e.target.value })}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
             
             <Grid item xs={12}>
               <Typography variant="h6" gutterBottom>
@@ -810,6 +880,15 @@ const Quotations: React.FC = () => {
               </Typography>
               {formData.items.map((item, index) => (
                 <Grid container spacing={2} key={index} sx={{ mb: 2 }}>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      label="Partida (opcional)"
+                      value={item.partida || ''}
+                      onChange={(e) => updateItem(index, 'partida', e.target.value)}
+                      fullWidth
+                      placeholder="Ej: Desarme de bodega"
+                    />
+                  </Grid>
                   <Grid item xs={12} md={4}>
                     <TextField
                       label="Descripción"
@@ -818,7 +897,7 @@ const Quotations: React.FC = () => {
                       fullWidth
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={1.5}>
                     <TextField
                       label="Cantidad"
                       type="number"
@@ -827,7 +906,7 @@ const Quotations: React.FC = () => {
                       fullWidth
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={1.5}>
                     <TextField
                       label="Unidad"
                       value={item.unit}
@@ -835,7 +914,7 @@ const Quotations: React.FC = () => {
                       fullWidth
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={1.5}>
                     <TextField
                       label="Precio Unit."
                       type="number"
@@ -847,10 +926,10 @@ const Quotations: React.FC = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} md={1}>
+                  <Grid item xs={12} md={1.5}>
                     <TextField
                       label="Total"
-                      value={item.total}
+                      value={item.total.toLocaleString('es-CL')}
                       fullWidth
                       disabled
                       InputProps={{
@@ -880,6 +959,96 @@ const Quotations: React.FC = () => {
             </Grid>
 
             <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Costos y Totales
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Mano de Obra"
+                type="number"
+                value={formData.labor_cost}
+                onChange={(e) => setFormData({ ...formData, labor_cost: parseFloat(e.target.value) || 0 })}
+                fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Margen (%)"
+                type="number"
+                value={formData.margin_percentage}
+                onChange={(e) => setFormData({ ...formData, margin_percentage: parseFloat(e.target.value) || 0 })}
+                fullWidth
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Card variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Total Materiales:</Typography>
+                  <Typography fontWeight="bold">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).materialsTotal.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Mano de Obra:</Typography>
+                  <Typography fontWeight="bold">
+                    ${formData.labor_cost.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Subtotal:</Typography>
+                  <Typography fontWeight="bold">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).subtotal.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Margen ({formData.margin_percentage}%):</Typography>
+                  <Typography fontWeight="bold">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).marginAmount.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Neto:</Typography>
+                  <Typography fontWeight="bold">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).netTotal.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>IVA (19%):</Typography>
+                  <Typography fontWeight="bold">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).tax.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Divider sx={{ my: 1 }} />
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h6">TOTAL:</Typography>
+                  <Typography variant="h6" fontWeight="bold" color="primary">
+                    ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).total.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Forma de Pago"
+                value={formData.payment_terms}
+                onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
+                fullWidth
+                placeholder="Ej: 50% anticipo / 50% contra entrega"
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <TextField
                 label="Notas"
                 value={formData.notes}
@@ -887,6 +1056,7 @@ const Quotations: React.FC = () => {
                 fullWidth
                 multiline
                 rows={3}
+                placeholder="Notas adicionales sobre la cotización..."
               />
             </Grid>
           </Grid>
@@ -963,12 +1133,31 @@ const Quotations: React.FC = () => {
               </TableContainer>
 
               <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Box textAlign="right">
-                  <Typography><strong>Subtotal:</strong> ${viewingQuotation.subtotal.toLocaleString('es-CL')}</Typography>
-                  <Typography><strong>IVA (19%):</strong> ${viewingQuotation.tax.toLocaleString('es-CL')}</Typography>
-                  <Typography variant="h6"><strong>TOTAL:</strong> ${viewingQuotation.total.toLocaleString('es-CL')}</Typography>
-                </Box>
+                <Card variant="outlined" sx={{ p: 2, minWidth: 300, bgcolor: 'grey.50' }}>
+                  <Box textAlign="right">
+                    <Typography><strong>Total Materiales:</strong> ${(viewingQuotation.materials_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
+                    {viewingQuotation.labor_cost > 0 && (
+                      <Typography><strong>Mano de Obra:</strong> ${viewingQuotation.labor_cost.toLocaleString('es-CL')}</Typography>
+                    )}
+                    <Typography><strong>Subtotal:</strong> ${viewingQuotation.subtotal.toLocaleString('es-CL')}</Typography>
+                    {viewingQuotation.margin_percentage && viewingQuotation.margin_percentage > 0 && (
+                      <Typography><strong>Margen ({viewingQuotation.margin_percentage}%):</strong> ${(viewingQuotation.margin_amount || 0).toLocaleString('es-CL')}</Typography>
+                    )}
+                    <Typography><strong>Neto:</strong> ${(viewingQuotation.net_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
+                    <Typography><strong>IVA (19%):</strong> ${viewingQuotation.tax.toLocaleString('es-CL')}</Typography>
+                    <Divider sx={{ my: 1 }} />
+                    <Typography variant="h6" color="primary"><strong>TOTAL:</strong> ${viewingQuotation.total.toLocaleString('es-CL')}</Typography>
+                  </Box>
+                </Card>
               </Box>
+
+              {viewingQuotation.payment_terms && (
+                <Box mt={2}>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Forma de pago:</strong> {viewingQuotation.payment_terms}
+                  </Typography>
+                </Box>
+              )}
 
               {viewingQuotation.notes && (
                 <Box mt={2}>

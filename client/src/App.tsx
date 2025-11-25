@@ -22,6 +22,10 @@ import Inventory from './pages/Inventory';
 import Projects from './pages/Projects';
 import PurchaseInvoices from './pages/PurchaseInvoices';
 import ChartOfAccounts from './pages/ChartOfAccounts';
+import ProfessionalDashboard from './pages/ProfessionalDashboard';
+import AccountingReports from './pages/AccountingReports';
+import Tasks from './pages/Tasks';
+import Payroll from './pages/Payroll';
 
 // Componente para rutas protegidas (DESACTIVADO TEMPORALMENTE)
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,7 +85,9 @@ const AppContent: React.FC = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/professional-dashboard" element={<ProfessionalDashboard />} />
         <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
+        <Route path="/accounting-reports" element={<AccountingReports />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/purchase-orders" element={<PurchaseOrders />} />
@@ -96,6 +102,8 @@ const AppContent: React.FC = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
         <Route path="/chart-of-accounts" element={<ChartOfAccounts />} />
+        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/payroll" element={<Payroll />} />
         {/* Ruta de login comentada pero disponible para reactivar más tarde */}
         {/* <Route path="/login" element={<Login />} /> */}
         <Route path="*" element={<Navigate to="/dashboard" />} />

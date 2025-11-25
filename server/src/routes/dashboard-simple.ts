@@ -179,6 +179,61 @@ router.get('/executive', authenticateToken, async (req: express.Request, res: ex
   }
 });
 
+// Dashboard profesional
+router.get('/professional', authenticateToken, async (req: express.Request, res: express.Response) => {
+  try {
+    const { date_from, date_to } = req.query;
+    const dateFrom = date_from ? new Date(date_from as string) : new Date(new Date().setDate(new Date().getDate() - 30));
+    const dateTo = date_to ? new Date(date_to as string) : new Date();
+
+    // Obtener datos reales de los endpoints existentes
+    // Por ahora retornamos datos mock estructurados para el dashboard profesional
+    const data = {
+      kpis: {
+        total_revenue: 125000000,
+        total_expenses: 85000000,
+        net_profit: 40000000,
+        profit_margin: 32.0
+      },
+      revenue_vs_expenses: [
+        { month: 'Ene', revenue: 8500000, expenses: 5800000 },
+        { month: 'Feb', revenue: 9200000, expenses: 6200000 },
+        { month: 'Mar', revenue: 10500000, expenses: 6800000 },
+        { month: 'Abr', revenue: 9800000, expenses: 6500000 },
+        { month: 'May', revenue: 11200000, expenses: 7200000 },
+        { month: 'Jun', revenue: 12800000, expenses: 7800000 }
+      ],
+      invoice_status: [
+        { name: 'Pagadas', value: 45 },
+        { name: 'Pendientes', value: 25 },
+        { name: 'Vencidas', value: 15 },
+        { name: 'Canceladas', value: 5 }
+      ],
+      top_clients: [
+        { name: 'Empresa ABC', revenue: 18500000, invoices: 8 },
+        { name: 'Corporación XYZ', revenue: 15200000, invoices: 6 },
+        { name: 'Constructora DEF', revenue: 12800000, invoices: 5 },
+        { name: 'Inversiones GHI', revenue: 9800000, invoices: 4 },
+        { name: 'Desarrollos JKL', revenue: 7500000, invoices: 3 }
+      ],
+      accounting_summary: {
+        total_assets: 125000000,
+        total_liabilities: 45000000,
+        total_equity: 80000000,
+        current_ratio: 2.5
+      }
+    };
+
+    res.json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    console.error('Error obteniendo dashboard profesional:', error);
+    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
+});
+
 // Dashboard operativo
 router.get('/operational', authenticateToken, async (req: express.Request, res: express.Response) => {
   try {

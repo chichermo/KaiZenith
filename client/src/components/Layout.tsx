@@ -33,13 +33,18 @@ import {
   Api as ApiIcon,
   CloudSync as CloudSyncIcon,
   Assessment as ExecutiveDashboardIcon,
+  Assessment as AssessmentIcon,
   Assignment as WorkflowIcon,
+  Assignment as AssignmentIcon,
   Inventory as InventoryIcon,
   Construction as ProjectsIcon,
+  Calculate as CalculateIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationBell from './NotificationBell';
+import GlobalSearch from './GlobalSearch';
+import FinancialCalculator from './FinancialCalculator';
 
 const drawerWidth = 240;
 
@@ -50,6 +55,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -76,6 +82,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Dashboard Profesional', icon: <ExecutiveDashboardIcon />, path: '/professional-dashboard' },
     { text: 'Dashboard Ejecutivo', icon: <ExecutiveDashboardIcon />, path: '/executive-dashboard' },
     { text: 'Clientes', icon: <PeopleIcon />, path: '/clients' },
     { text: 'Facturas', icon: <ReceiptIcon />, path: '/invoices' },
@@ -84,11 +91,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Cotizaciones', icon: <DescriptionIcon />, path: '/quotations' },
     { text: 'Proveedores', icon: <StoreIcon />, path: '/suppliers' },
     { text: 'Workflow y Aprobaciones', icon: <WorkflowIcon />, path: '/workflow' },
+    { text: 'Tareas y Recordatorios', icon: <AssignmentIcon />, path: '/tasks' },
+    { text: 'Recursos Humanos', icon: <PeopleIcon />, path: '/payroll' },
     { text: 'Inventario', icon: <InventoryIcon />, path: '/inventory' },
     { text: 'Proyectos', icon: <ProjectsIcon />, path: '/projects' },
     { text: 'Integración IA Proveedores', icon: <ApiIcon />, path: '/supplier-integration' },
     { text: 'Integraciones SII/Bancos', icon: <CloudSyncIcon />, path: '/integrations' },
     { text: 'Contabilidad', icon: <AccountBalanceIcon />, path: '/accounting' },
+    { text: 'Reportes Contables', icon: <AssessmentIcon />, path: '/accounting-reports' },
     { text: 'Plan de Cuentas', icon: <AccountTreeIcon />, path: '/chart-of-accounts' },
     { text: 'Configuración', icon: <SettingsIcon />, path: '/settings' },
   ];
@@ -206,10 +216,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 color: '#212121',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                display: { xs: 'none', md: 'block' },
+                mr: 2,
               }}
             >
               Sistema ERP Financiero
             </Typography>
+            <GlobalSearch />
           </Box>
           <NotificationBell />
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 } }}>
@@ -275,6 +288,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </ListItemIcon>
                 <ListItemText primary="Perfil" />
               </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setCalculatorOpen(true);
+                  handleMenuClose();
+                }}
+                sx={{ py: 1, fontSize: '0.875rem' }}
+              >
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  <CalculateIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Calculadora Financiera" />
+              </MenuItem>
               <Divider />
               <MenuItem onClick={handleLogout} sx={{ py: 1, fontSize: '0.875rem' }}>
                 <ListItemIcon sx={{ minWidth: 36 }}>
@@ -336,6 +361,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </Box>
       </Box>
+      <FinancialCalculator open={calculatorOpen} onClose={() => setCalculatorOpen(false)} />
     </Box>
   );
 };
