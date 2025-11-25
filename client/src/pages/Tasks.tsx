@@ -247,10 +247,10 @@ const Tasks: React.FC = () => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#ffffff', textShadow: '0 2px 8px rgba(94, 114, 228, 0.6)' }}>
             Tareas y Recordatorios
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             Gestiona tus tareas, recordatorios y seguimientos
           </Typography>
         </Box>
@@ -274,69 +274,77 @@ const Tasks: React.FC = () => {
       {/* Estadísticas */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                     Total Tareas
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     {tasks.length}
                   </Typography>
                 </Box>
-                <AssignmentIcon sx={{ fontSize: 40, color: '#0d47a1', opacity: 0.3 }} />
+                <Box sx={{ background: 'linear-gradient(135deg, #5e72e4 0%, #825ee4 100%)', borderRadius: 3, p: 1.5, boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)' }}>
+                  <AssignmentIcon sx={{ fontSize: 32, color: '#ffffff' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                     Pendientes
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#f57c00' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     {tasks.filter((t) => t.status === 'pending').length}
                   </Typography>
                 </Box>
-                <RadioButtonUncheckedIcon sx={{ fontSize: 40, color: '#f57c00', opacity: 0.3 }} />
+                <Box sx={{ background: 'linear-gradient(135deg, #fb6340 0%, #e04a2a 100%)', borderRadius: 3, p: 1.5, boxShadow: '0 4px 6px rgba(251, 99, 64, 0.3)' }}>
+                  <RadioButtonUncheckedIcon sx={{ fontSize: 32, color: '#ffffff' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                     En Progreso
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#0277bd' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     {tasks.filter((t) => t.status === 'in_progress').length}
                   </Typography>
                 </Box>
-                <NotificationsIcon sx={{ fontSize: 40, color: '#0277bd', opacity: 0.3 }} />
+                <Box sx={{ background: 'linear-gradient(135deg, #11cdef 0%, #0da5c0 100%)', borderRadius: 3, p: 1.5, boxShadow: '0 4px 6px rgba(17, 205, 239, 0.3)' }}>
+                  <NotificationsIcon sx={{ fontSize: 32, color: '#ffffff' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                     Completadas
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#2e7d32' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     {tasks.filter((t) => t.status === 'completed').length}
                   </Typography>
                 </Box>
-                <CheckCircleIcon sx={{ fontSize: 40, color: '#2e7d32', opacity: 0.3 }} />
+                <Box sx={{ background: 'linear-gradient(135deg, #2dce89 0%, #1aae6e 100%)', borderRadius: 3, p: 1.5, boxShadow: '0 4px 6px rgba(45, 206, 137, 0.3)' }}>
+                  <CheckCircleIcon sx={{ fontSize: 32, color: '#ffffff' }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -344,9 +352,23 @@ const Tasks: React.FC = () => {
       </Grid>
 
       {/* Filtros y Tabs */}
-      <Card sx={{ mb: 3 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+      <Card sx={{ mb: 3, border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+          <Tabs 
+            value={tabValue} 
+            onChange={(e, newValue) => setTabValue(newValue)}
+            sx={{
+              '& .MuiTab-root': {
+                color: 'rgba(255, 255, 255, 0.7)',
+                '&.Mui-selected': {
+                  color: '#ffffff',
+                },
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#5e72e4',
+              },
+            }}
+          >
             <Tab icon={<TodayIcon />} label="Hoy" iconPosition="start" />
             <Tab icon={<UpcomingIcon />} label="Próximas" iconPosition="start" />
             <Tab icon={<NotificationsIcon />} label="Vencidas" iconPosition="start" />
@@ -357,7 +379,7 @@ const Tasks: React.FC = () => {
       </Card>
 
       {/* Lista de Tareas */}
-      <Card>
+      <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
         <CardContent>
           {loading ? (
             <LinearProgress />

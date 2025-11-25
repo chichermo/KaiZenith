@@ -104,10 +104,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#fafafa' }}>
+    <Box sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      background: 'linear-gradient(180deg, #172b4d 0%, #1a2742 100%)',
+      color: 'white',
+    }}>
       <Toolbar
         sx={{
-          backgroundColor: '#0d47a1',
+          background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
           color: 'white',
           minHeight: '64px !important',
           px: 2,
@@ -116,27 +122,41 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
           <Box
-            component="img"
-            src="/Logo.jpg"
-            alt="KaiZenith Spa Logo"
             sx={{
-              height: 36,
-              width: 'auto',
-              objectFit: 'contain',
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'linear-gradient(87deg, #ffffff 0, #f0f0f0 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               mr: 1.5,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             }}
-          />
+          >
+            <Box
+              component="img"
+              src="/Logo.jpg"
+              alt="KaiZenith Spa Logo"
+              sx={{
+                height: 32,
+                width: 32,
+                objectFit: 'contain',
+                borderRadius: '50%',
+              }}
+            />
+          </Box>
           <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, fontSize: '0.875rem', lineHeight: 1.2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '0.875rem', lineHeight: 1.2, color: 'white' }}>
               KaiZenith Spa
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
+            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
               ERP Financiero
             </Typography>
           </Box>
         </Box>
       </Toolbar>
-      <Divider />
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
       <List sx={{ flexGrow: 1, px: 1, py: 1 }}>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding>
@@ -144,33 +164,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
               sx={{
-                borderRadius: 1,
+                borderRadius: 2,
                 py: 0.75,
                 px: 1.5,
                 minHeight: 40,
+                mb: 0.5,
                 '&.Mui-selected': {
-                  backgroundColor: '#e3f2fd',
-                  color: '#0d47a1',
+                  background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
                   '&:hover': {
-                    backgroundColor: '#bbdefb',
+                    background: 'linear-gradient(87deg, #4c63d2 0, #6d4cd2 100%)',
                   },
                   '& .MuiListItemIcon-root': {
-                    color: '#0d47a1',
+                    color: '#ffffff',
                   },
                 },
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: location.pathname === item.path ? '#0d47a1' : '#546e7a' }}>
+              <ListItemIcon sx={{ minWidth: 36, color: location.pathname === item.path ? '#ffffff' : 'rgba(255,255,255,0.7)' }}>
                 {item.icon}
               </ListItemIcon>
               <ListItemText 
                 primary={item.text} 
                 primaryTypographyProps={{
                   fontSize: '0.813rem',
-                  fontWeight: location.pathname === item.path ? 500 : 400,
+                  fontWeight: location.pathname === item.path ? 600 : 400,
+                  color: location.pathname === item.path ? '#ffffff' : 'rgba(255,255,255,0.9)',
                 }}
               />
             </ListItemButton>
@@ -188,9 +211,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+          boxShadow: '0 0.125rem 0.5rem rgba(0, 0, 0, 0.3)',
         }}
       >
-        <Toolbar sx={{ minHeight: { xs: '56px !important', sm: '64px !important' }, px: { xs: 1.5, sm: 2, md: 3 }, backgroundColor: '#ffffff' }}>
+        <Toolbar sx={{ 
+          minHeight: { xs: '56px !important', sm: '64px !important' }, 
+          px: { xs: 1.5, sm: 2, md: 3 }, 
+          background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 0.125rem 0.5rem rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+        }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -199,8 +231,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             sx={{ 
               mr: { xs: 1, sm: 2 }, 
               display: { sm: 'none' },
-              color: '#37474f',
+              color: 'rgba(255, 255, 255, 0.9)',
               padding: { xs: '8px', sm: '12px' },
+              '&:hover': {
+                background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)',
+              },
             }}
           >
             <MenuIcon sx={{ fontSize: { xs: '24px', sm: '28px' } }} />
@@ -211,26 +246,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               noWrap 
               component="div" 
               sx={{ 
-                fontWeight: 500, 
+                fontWeight: 600, 
                 fontSize: { xs: '0.875rem', sm: '0.938rem', md: '1rem' }, 
-                color: '#212121',
+                color: 'rgba(255, 255, 255, 0.9)',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: { xs: 'none', md: 'block' },
                 mr: 2,
               }}
             >
-              Sistema ERP Financiero
+              Home &gt; Dashboard
             </Typography>
             <GlobalSearch />
           </Box>
           <NotificationBell />
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 } }}>
             <Box sx={{ textAlign: 'right', display: { xs: 'none', md: 'block' } }}>
-              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.813rem', color: '#212121' }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.813rem', color: 'rgba(255, 255, 255, 0.9)' }}>
                 {user?.name}
               </Typography>
-              <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#546e7a' }}>
+              <Typography variant="caption" sx={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)' }}>
                 {user?.role === 'admin' ? 'Administrador' : user?.role === 'accountant' ? 'Contador' : 'Usuario'}
               </Typography>
             </Box>
@@ -241,18 +276,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               aria-haspopup="true"
               onClick={handleMenuOpen}
               sx={{
-                color: '#37474f',
+                color: 'rgba(255, 255, 255, 0.9)',
+                position: 'relative',
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
+                  background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)',
                 },
               }}
             >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  backgroundColor: '#f5365c',
+                  border: '2px solid #ffffff',
+                  zIndex: 1,
+                }}
+              />
               <Avatar 
                 sx={{ 
-                  width: 32, 
-                  height: 32,
-                  backgroundColor: '#0d47a1',
+                  width: 36, 
+                  height: 36,
+                  background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
                   fontSize: '0.875rem',
+                  fontWeight: 600,
                 }}
               >
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
@@ -351,9 +401,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           flexGrow: 1,
           p: { xs: 1.5, sm: 2, md: 3 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          backgroundColor: '#f5f7fa',
+          background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 50%, #1a2742 100%)',
           minHeight: '100vh',
           overflowX: 'hidden',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '300px',
+            background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.15) 0%, rgba(130, 94, 228, 0.15) 100%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '400px',
+            height: '400px',
+            background: 'radial-gradient(circle, rgba(94, 114, 228, 0.2) 0%, transparent 70%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          },
+          '& > *': {
+            position: 'relative',
+            zIndex: 1,
+          },
         }}
       >
         <Toolbar sx={{ minHeight: { xs: '56px !important', sm: '64px !important' } }} />

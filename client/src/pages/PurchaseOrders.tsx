@@ -484,68 +484,258 @@ const PurchaseOrders: React.FC = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1">
-          Órdenes de Compra
-        </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography 
+            variant="h2" 
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              mb: 1,
+              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
+              color: '#ffffff',
+              textShadow: '0 2px 8px rgba(94, 114, 228, 0.6)',
+            }}
+          >
+            Órdenes de Compra
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleCreateOrder}
-          sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
+          sx={{ 
+            background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+            color: '#ffffff',
+            fontWeight: 600,
+            borderRadius: 2,
+            px: 3,
+            py: 1.5,
+            boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+            '&:hover': { 
+              background: 'linear-gradient(87deg, #4c63d2 0, #6d4cd2 100%)',
+              boxShadow: '0 8px 12px rgba(94, 114, 228, 0.4)',
+              transform: 'translateY(-2px)',
+            },
+            transition: 'all 0.3s ease',
+          }}
         >
-          Nueva Orden
+          + Nueva Orden
         </Button>
       </Box>
 
       {/* Estadísticas */}
-      <Grid container spacing={3} mb={3}>
+      <Grid container spacing={3} mb={4}>
         <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <MoneyIcon color="primary" sx={{ mr: 1 }} />
+          <Card
+            sx={{
+              border: 'none',
+              background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+              borderRadius: 4,
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: '0 1.5rem 3rem rgba(94, 114, 228, 0.5)',
+              },
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '6px',
+                background: 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)',
+                zIndex: 1,
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography 
+                    variant="overline" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      mb: 1.5,
+                    }}
+                  >
                     Total Ordenado
                   </Typography>
-                  <Typography variant="h5">
+                  <Typography 
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      textShadow: '0 2px 8px rgba(94, 114, 228, 0.6)',
+                      fontSize: '2rem',
+                    }}
+                  >
                     ${totalAmount.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <InventoryIcon color="warning" sx={{ mr: 1 }} />
-                <Box>
-                  <Typography color="textSecondary" gutterBottom>
-                    Pendiente
-                  </Typography>
-                  <Typography variant="h5">
-                    ${pendingAmount.toLocaleString('es-CL')}
-                  </Typography>
+                <Box
+                  sx={{
+                    background: 'linear-gradient(135deg, #5e72e4 0%, #825ee4 100%)',
+                    borderRadius: 3,
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+                  }}
+                >
+                  <MoneyIcon sx={{ fontSize: 32, color: '#ffffff' }} />
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <DeliveredIcon color="success" sx={{ mr: 1 }} />
+          <Card
+            sx={{
+              border: 'none',
+              background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+              borderRadius: 4,
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: '0 1.5rem 3rem rgba(94, 114, 228, 0.5)',
+              },
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '6px',
+                background: 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)',
+                zIndex: 1,
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <Typography color="textSecondary" gutterBottom>
+                  <Typography 
+                    variant="overline" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      mb: 1.5,
+                    }}
+                  >
+                    Pendiente
+                  </Typography>
+                  <Typography 
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      fontSize: '2rem',
+                    }}
+                  >
+                    ${pendingAmount.toLocaleString('es-CL')}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    background: 'linear-gradient(135deg, #5e72e4 0%, #825ee4 100%)',
+                    borderRadius: 3,
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+                  }}
+                >
+                  <InventoryIcon sx={{ fontSize: 32, color: '#ffffff' }} />
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              border: 'none',
+              background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+              borderRadius: 4,
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: '0 1.5rem 3rem rgba(94, 114, 228, 0.5)',
+              },
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '6px',
+                background: 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)',
+                zIndex: 1,
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3, position: 'relative', zIndex: 2 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography 
+                    variant="overline" 
+                    sx={{ 
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      mb: 1.5,
+                    }}
+                  >
                     Entregado
                   </Typography>
-                  <Typography variant="h5">
+                  <Typography 
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      textShadow: '0 2px 8px rgba(94, 114, 228, 0.6)',
+                      fontSize: '2rem',
+                    }}
+                  >
                     ${deliveredAmount.toLocaleString('es-CL')}
                   </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    background: 'linear-gradient(135deg, #5e72e4 0%, #825ee4 100%)',
+                    borderRadius: 3,
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+                  }}
+                >
+                  <DeliveredIcon sx={{ fontSize: 32, color: '#ffffff' }} />
                 </Box>
               </Box>
             </CardContent>
@@ -554,22 +744,70 @@ const PurchaseOrders: React.FC = () => {
       </Grid>
 
       {/* Filtros */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
+      <Card 
+        sx={{ 
+          mb: 3,
+          border: 'none',
+          background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+          borderRadius: 4,
+          boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
           <Box display="flex" alignItems="center" mb={2}>
-            <SearchIcon sx={{ mr: 1 }} />
             <TextField
               placeholder="Buscar por número de orden o proveedor..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               variant="outlined"
               size="small"
-              sx={{ flexGrow: 1, mr: 2 }}
+              sx={{ 
+                flexGrow: 1, 
+                mr: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5e72e4',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    opacity: 1,
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               startIcon={<FilterIcon />}
               onClick={() => setShowFilters(!showFilters)}
               variant="outlined"
+              sx={{
+                borderColor: '#5e72e4',
+                color: '#5e72e4',
+                borderRadius: 2,
+                fontWeight: 600,
+                '&:hover': {
+                  borderColor: '#4c63d2',
+                  backgroundColor: 'rgba(94, 114, 228, 0.08)',
+                },
+              }}
             >
               Filtros
             </Button>
@@ -622,17 +860,30 @@ const PurchaseOrders: React.FC = () => {
       </Card>
 
       {/* Tabla de órdenes de compra */}
-      <TableContainer component={Paper}>
+      <TableContainer 
+        component={Paper}
+        sx={{
+          borderRadius: 4,
+          border: 'none',
+          background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+          boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+          overflow: 'hidden',
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Número</TableCell>
-              <TableCell>Proveedor</TableCell>
-              <TableCell>Fecha</TableCell>
-              <TableCell>Entrega</TableCell>
-              <TableCell>Total</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Acciones</TableCell>
+            <TableRow
+              sx={{
+                background: 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)',
+              }}
+            >
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Número</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Proveedor</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Fecha</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Entrega</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Total</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Estado</TableCell>
+              <TableCell sx={{ color: '#ffffff', fontWeight: 700 }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -668,8 +919,17 @@ const PurchaseOrders: React.FC = () => {
                   <Chip
                     icon={getStatusIcon(order.status)}
                     label={getStatusLabel(order.status)}
-                    color={getStatusColor(order.status) as any}
                     size="small"
+                    sx={{
+                      background: order.status === 'delivered' 
+                        ? 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)'
+                        : order.status === 'pending'
+                        ? 'linear-gradient(87deg, #fb6340 0%, #e04a2a 100%)'
+                        : 'linear-gradient(87deg, #5e72e4 0%, #825ee4 100%)',
+                      color: '#ffffff',
+                      fontWeight: 600,
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    }}
                   />
                 </TableCell>
                 <TableCell>
@@ -678,6 +938,14 @@ const PurchaseOrders: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => handleViewOrder(order)}
+                        sx={{
+                          color: '#5e72e4',
+                          '&:hover': {
+                            backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.2s ease',
+                        }}
                       >
                         <ViewIcon />
                       </IconButton>
@@ -686,6 +954,14 @@ const PurchaseOrders: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => handleEditOrder(order)}
+                        sx={{
+                          color: '#5e72e4',
+                          '&:hover': {
+                            backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.2s ease',
+                        }}
                       >
                         <EditIcon />
                       </IconButton>
@@ -694,6 +970,14 @@ const PurchaseOrders: React.FC = () => {
                       <IconButton
                         size="small"
                         onClick={() => handleDownloadPDF(order.id)}
+                        sx={{
+                          color: '#5e72e4',
+                          '&:hover': {
+                            backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.2s ease',
+                        }}
                       >
                         <DownloadIcon />
                       </IconButton>
@@ -703,6 +987,14 @@ const PurchaseOrders: React.FC = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleUpdateStatus(order.id, 'approved')}
+                          sx={{
+                            color: '#5e72e4',
+                            '&:hover': {
+                              backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                              transform: 'scale(1.1)',
+                            },
+                            transition: 'all 0.2s ease',
+                          }}
                         >
                           <ApprovedIcon />
                         </IconButton>
@@ -713,6 +1005,14 @@ const PurchaseOrders: React.FC = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleUpdateStatus(order.id, 'ordered')}
+                          sx={{
+                            color: '#5e72e4',
+                            '&:hover': {
+                              backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                              transform: 'scale(1.1)',
+                            },
+                            transition: 'all 0.2s ease',
+                          }}
                         >
                           <OrderedIcon />
                         </IconButton>
@@ -723,6 +1023,14 @@ const PurchaseOrders: React.FC = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleUpdateStatus(order.id, 'delivered')}
+                          sx={{
+                            color: '#5e72e4',
+                            '&:hover': {
+                              backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                              transform: 'scale(1.1)',
+                            },
+                            transition: 'all 0.2s ease',
+                          }}
                         >
                           <DeliveredIcon />
                         </IconButton>
@@ -868,10 +1176,33 @@ const PurchaseOrders: React.FC = () => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>
+          <Button 
+            onClick={() => setOpenDialog(false)}
+            sx={{
+              color: '#8898aa',
+              '&:hover': {
+                backgroundColor: 'rgba(136, 152, 170, 0.1)',
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleSaveOrder} variant="contained">
+          <Button 
+            onClick={handleSaveOrder} 
+            variant="contained"
+            sx={{
+              background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+              color: '#ffffff',
+              fontWeight: 600,
+              boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(87deg, #4c63d2 0, #6d4cd2 100%)',
+                boxShadow: '0 8px 12px rgba(94, 114, 228, 0.4)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.3s ease',
+            }}
+          >
             Guardar
           </Button>
         </DialogActions>
@@ -958,13 +1289,33 @@ const PurchaseOrders: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenViewDialog(false)}>
+          <Button 
+            onClick={() => setOpenViewDialog(false)}
+            sx={{
+              color: '#8898aa',
+              '&:hover': {
+                backgroundColor: 'rgba(136, 152, 170, 0.1)',
+              },
+            }}
+          >
             Cerrar
           </Button>
           <Button
             onClick={() => handleDownloadPDF(viewingOrder!.id)}
             variant="contained"
             startIcon={<DownloadIcon />}
+            sx={{
+              background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+              color: '#ffffff',
+              fontWeight: 600,
+              boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(87deg, #4c63d2 0, #6d4cd2 100%)',
+                boxShadow: '0 8px 12px rgba(94, 114, 228, 0.4)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.3s ease',
+            }}
           >
             Descargar PDF
           </Button>

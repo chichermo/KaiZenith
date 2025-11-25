@@ -207,25 +207,52 @@ const GlobalSearch: React.FC = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ color: '#78909c' }} />
+              <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
             </InputAdornment>
           ),
           endAdornment: query && (
             <InputAdornment position="end">
-              <IconButton size="small" onClick={handleClose}>
-                <CloseIcon fontSize="small" />
+              <IconButton 
+                size="small" 
+                onClick={handleClose} 
+                sx={{ 
+                  '&:hover': { 
+                    background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)',
+                  } 
+                }}
+              >
+                <CloseIcon fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
               </IconButton>
             </InputAdornment>
           ),
         }}
         sx={{
           '& .MuiOutlinedInput-root': {
-            backgroundColor: '#f5f7fa',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: 2,
+            color: 'rgba(255, 255, 255, 0.9)',
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+            },
             '&:hover': {
-              backgroundColor: '#ffffff',
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              '& fieldset': {
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+              },
             },
             '&.Mui-focused': {
-              backgroundColor: '#ffffff',
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              '& fieldset': {
+                borderColor: '#5e72e4',
+                borderWidth: '2px',
+              },
+            },
+          },
+          '& .MuiInputBase-input': {
+            color: 'rgba(255, 255, 255, 0.9)',
+            '&::placeholder': {
+              color: 'rgba(255, 255, 255, 0.5)',
+              opacity: 1,
             },
           },
         }}
@@ -244,25 +271,28 @@ const GlobalSearch: React.FC = () => {
               mt: 1,
               maxHeight: 400,
               overflow: 'auto',
-              border: '1px solid #e0e0e0',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+              boxShadow: '0 0.5rem 1rem rgba(0, 0, 0, 0.5)',
             }}
           >
             {loading ? (
               <Box sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                   Buscando...
                 </Typography>
               </Box>
             ) : results.length === 0 && query.length >= 2 ? (
               <Box sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                   No se encontraron resultados
                 </Typography>
               </Box>
             ) : results.length > 0 ? (
               <>
-                <Box sx={{ p: 1.5, borderBottom: '1px solid #e0e0e0' }}>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                <Box sx={{ p: 1.5, borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                  <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 600, fontSize: '0.75rem' }}>
                     {results.length} resultado{results.length !== 1 ? 's' : ''} encontrado{results.length !== 1 ? 's' : ''}
                   </Typography>
                 </Box>
@@ -270,28 +300,45 @@ const GlobalSearch: React.FC = () => {
                   {results.map((result, index) => (
                     <React.Fragment key={`${result.type}-${result.id}`}>
                       <ListItem disablePadding>
-                        <ListItemButton onClick={() => handleResultClick(result)}>
-                          <ListItemIcon sx={{ minWidth: 40, color: '#546e7a' }}>
+                        <ListItemButton 
+                          onClick={() => handleResultClick(result)}
+                          sx={{
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)',
+                            },
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 40, color: '#5e72e4' }}>
                             {result.icon}
                           </ListItemIcon>
                           <ListItemText
                             primary={
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
                                   {result.title}
                                 </Typography>
                                 <Chip
                                   label={getTypeLabel(result.type)}
                                   size="small"
-                                  sx={{ height: 20, fontSize: '0.65rem' }}
+                                  sx={{ 
+                                    height: 20, 
+                                    fontSize: '0.65rem',
+                                    background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                                    color: 'white',
+                                    fontWeight: 600,
+                                  }}
                                 />
                               </Box>
                             }
-                            secondary={result.subtitle}
+                            secondary={
+                              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.75rem' }}>
+                                {result.subtitle}
+                              </Typography>
+                            }
                           />
                         </ListItemButton>
                       </ListItem>
-                      {index < results.length - 1 && <Divider />}
+                      {index < results.length - 1 && <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />}
                     </React.Fragment>
                   ))}
                 </List>

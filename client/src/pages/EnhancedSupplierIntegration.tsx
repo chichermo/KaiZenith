@@ -416,8 +416,15 @@ const EnhancedSupplierIntegration: React.FC = () => {
   const renderIntelligentSearchTab = () => (
     <Box>
       <Box display="flex" alignItems="center" mb={3}>
-        <AIIcon sx={{ mr: 1, color: 'primary.main' }} />
-        <Typography variant="h5">
+        <AIIcon sx={{ mr: 1, color: '#5e72e4' }} />
+        <Typography 
+          variant="h5"
+          sx={{
+            fontWeight: 700,
+            color: '#ffffff',
+            textShadow: '0 2px 4px rgba(94, 114, 228, 0.5)',
+          }}
+        >
           Búsqueda Inteligente con IA
         </Typography>
         <Chip 

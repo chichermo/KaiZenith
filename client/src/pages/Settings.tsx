@@ -1281,11 +1281,35 @@ const Settings: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{
+          fontWeight: 700,
+          color: '#ffffff',
+          textShadow: '0 2px 8px rgba(94, 114, 228, 0.6)',
+        }}
+      >
         Configuración
       </Typography>
 
-      <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
+      <Tabs 
+        value={activeTab} 
+        onChange={(e, newValue) => setActiveTab(newValue)} 
+        sx={{ 
+          mb: 3,
+          '& .MuiTab-root': {
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&.Mui-selected': {
+              color: '#ffffff',
+            },
+          },
+          '& .MuiTabs-indicator': {
+            backgroundColor: '#5e72e4',
+          },
+        }}
+      >
         <Tab icon={<CompanyIcon />} label="Empresa" />
         <Tab icon={<UsersIcon />} label="Usuarios" />
         <Tab icon={<ApiIcon />} label="Integraciones" />

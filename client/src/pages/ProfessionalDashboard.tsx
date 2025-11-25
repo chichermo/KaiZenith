@@ -103,7 +103,7 @@ interface DashboardData {
   topProducts: Array<{ name: string; quantity: number; revenue: number }>;
 }
 
-const COLORS = ['#0d47a1', '#2e7d32', '#f57c00', '#c62828', '#7b1fa2', '#00838f'];
+const COLORS = ['#5e72e4', '#2dce89', '#fb6340', '#f5365c', '#11cdef', '#825ee4'];
 
 const ProfessionalDashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -256,32 +256,55 @@ const ProfessionalDashboard: React.FC = () => {
     color: string;
     trend?: { value: number; isPositive: boolean };
   }> = ({ title, value, subtitle, icon, color, trend }) => (
-    <Card sx={{ height: '100%', border: '1px solid #e8eaed', transition: 'all 0.3s ease', '&:hover': { boxShadow: 4 } }}>
-      <CardContent sx={{ p: 2.5 }}>
+    <Card sx={{ 
+      height: '100%', 
+      border: 'none', 
+      transition: 'all 0.3s ease', 
+      background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)',
+      borderRadius: 4,
+      overflow: 'hidden',
+      position: 'relative',
+      boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)',
+      '&:hover': { 
+        boxShadow: '0 1.5rem 3rem rgba(94, 114, 228, 0.5)',
+        transform: 'translateY(-8px)',
+      },
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 6,
+        background: `linear-gradient(87deg, ${color} 0, ${color}dd 100%)`,
+        zIndex: 1,
+      },
+    }}>
+      <CardContent sx={{ p: 2.5, position: 'relative', zIndex: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="overline" sx={{ color: '#78909c', fontSize: '0.688rem', fontWeight: 500 }}>
+            <Typography variant="overline" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.688rem', fontWeight: 600, letterSpacing: '0.1em' }}>
               {title}
             </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#212121', mt: 0.5, mb: 0.5 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff', mt: 0.5, mb: 0.5, fontSize: '1.75rem' }}>
               {value}
             </Typography>
             {subtitle && (
-              <Typography variant="caption" sx={{ color: '#78909c', fontSize: '0.75rem' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.75rem', fontWeight: 500 }}>
                 {subtitle}
               </Typography>
             )}
             {trend && (
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1.5 }}>
                 {trend.isPositive ? (
-                  <TrendingUpIcon sx={{ fontSize: 16, color: '#2e7d32', mr: 0.5 }} />
+                  <TrendingUpIcon sx={{ fontSize: 16, color: '#2dce89', mr: 0.5 }} />
                 ) : (
-                  <TrendingDownIcon sx={{ fontSize: 16, color: '#c62828', mr: 0.5 }} />
+                  <TrendingDownIcon sx={{ fontSize: 16, color: '#f5365c', mr: 0.5 }} />
                 )}
-                <Typography variant="caption" sx={{ color: trend.isPositive ? '#2e7d32' : '#c62828', fontWeight: 500 }}>
+                <Typography variant="caption" sx={{ color: trend.isPositive ? '#2dce89' : '#f5365c', fontWeight: 600, fontSize: '0.813rem' }}>
                   {trend.isPositive ? '+' : ''}{trend.value.toFixed(1)}%
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#78909c', ml: 0.5 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', ml: 0.5, fontSize: '0.75rem' }}>
                   vs período anterior
                 </Typography>
               </Box>
@@ -289,15 +312,16 @@ const ProfessionalDashboard: React.FC = () => {
           </Box>
           <Box
             sx={{
-              backgroundColor: color,
+              background: `linear-gradient(87deg, ${color} 0, ${color}dd 100%)`,
               color: 'white',
               borderRadius: 2,
               p: 1.5,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minWidth: 48,
-              height: 48,
+              minWidth: 56,
+              height: 56,
+              boxShadow: `0 4px 6px ${color}40`,
             }}
           >
             {icon}
@@ -342,10 +366,10 @@ const ProfessionalDashboard: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: '#212121', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
             Dashboard Profesional
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: '#8898aa' }}>
             Última actualización: {format(lastRefresh, "dd 'de' MMMM 'a las' HH:mm")}
           </Typography>
         </Box>
@@ -377,7 +401,7 @@ const ProfessionalDashboard: React.FC = () => {
             title="Ingresos Totales"
             value={`$${data.financial.total_revenue.toLocaleString('es-CL')}`}
             icon={<MoneyIcon />}
-            color="#2e7d32"
+            color="#2dce89"
             trend={{ value: 12.5, isPositive: true }}
           />
         </Grid>
@@ -386,7 +410,7 @@ const ProfessionalDashboard: React.FC = () => {
             title="Gastos Totales"
             value={`$${data.financial.total_expenses.toLocaleString('es-CL')}`}
             icon={<ShoppingCartIcon />}
-            color="#c62828"
+            color="#f5365c"
             trend={{ value: -5.2, isPositive: false }}
           />
         </Grid>
@@ -396,7 +420,7 @@ const ProfessionalDashboard: React.FC = () => {
             value={`$${data.financial.net_profit.toLocaleString('es-CL')}`}
             subtitle={`Margen: ${data.financial.profit_margin.toFixed(1)}%`}
             icon={<TrendingUpIcon />}
-            color="#0d47a1"
+            color="#5e72e4"
             trend={{ value: 18.3, isPositive: true }}
           />
         </Grid>
@@ -405,7 +429,7 @@ const ProfessionalDashboard: React.FC = () => {
             title="Flujo de Caja"
             value={`$${data.financial.cash_flow.toLocaleString('es-CL')}`}
             icon={<AccountBalanceIcon />}
-            color="#7b1fa2"
+            color="#11cdef"
             trend={{ value: 8.7, isPositive: true }}
           />
         </Grid>
@@ -415,36 +439,56 @@ const ProfessionalDashboard: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {/* Gráfico de Ingresos vs Gastos */}
         <Grid item xs={12} lg={8}>
-          <Card sx={{ border: '1px solid #e8eaed' }}>
-            <CardContent>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, overflow: 'hidden', boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
+            <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff' }}>
                   Ingresos vs Gastos
                 </Typography>
-                <Chip icon={<LineChartIcon />} label="Tendencia" size="small" />
+                <Chip 
+                  icon={<LineChartIcon />} 
+                  label="Tendencia" 
+                  size="small" 
+                  sx={{ 
+                    background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                    color: 'white',
+                    fontWeight: 600,
+                  }} 
+                />
               </Box>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={revenueExpenseData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2e7d32" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#2e7d32" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2dce89" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#2dce89" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#c62828" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#c62828" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#f5365c" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#f5365c" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#5e72e4" stopOpacity={0.1} />
+                      <stop offset="50%" stopColor="#825ee4" stopOpacity={0.1} />
+                      <stop offset="100%" stopColor="#f5365c" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="date" stroke="#78909c" />
-                  <YAxis stroke="#78909c" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
+                  <XAxis dataKey="date" stroke="#8898aa" fontSize={12} />
+                  <YAxis stroke="#8898aa" fontSize={12} />
                   <RechartsTooltip
                     formatter={(value: number) => `$${value.toLocaleString('es-CL')}`}
-                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: 4 }}
+                    contentStyle={{ 
+                      backgroundColor: '#1a2742', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)', 
+                      borderRadius: 8,
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.5)',
+                      color: '#ffffff',
+                    }}
                   />
                   <Legend />
-                  <Area type="monotone" dataKey="Ingresos" stroke="#2e7d32" fillOpacity={1} fill="url(#colorRevenue)" />
-                  <Area type="monotone" dataKey="Gastos" stroke="#c62828" fillOpacity={1} fill="url(#colorExpenses)" />
+                  <Area type="monotone" dataKey="Ingresos" stroke="#2dce89" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
+                  <Area type="monotone" dataKey="Gastos" stroke="#f5365c" strokeWidth={2} fillOpacity={1} fill="url(#colorExpenses)" />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -453,9 +497,9 @@ const ProfessionalDashboard: React.FC = () => {
 
         {/* Gráfico de Estado de Facturas */}
         <Grid item xs={12} lg={4}>
-          <Card sx={{ border: '1px solid #e8eaed' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, overflow: 'hidden', boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: '#ffffff' }}>
                 Estado de Facturas
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -466,33 +510,44 @@ const ProfessionalDashboard: React.FC = () => {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
+                    outerRadius={90}
                     fill="#8884d8"
                     dataKey="value"
+                    stroke="#ffffff"
+                    strokeWidth={2}
                   >
                     {invoiceStatusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <RechartsTooltip />
+                  <RechartsTooltip
+                    contentStyle={{ 
+                      backgroundColor: '#1a2742', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)', 
+                      borderRadius: 8,
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.5)',
+                      color: '#ffffff',
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
               <Box sx={{ mt: 2 }}>
                 {invoiceStatusData.map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, p: 1, borderRadius: 1, '&:hover': { background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)' } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: 14,
+                          height: 14,
                           borderRadius: '50%',
                           backgroundColor: COLORS[index],
-                          mr: 1,
+                          mr: 1.5,
+                          boxShadow: `0 2px 4px ${COLORS[index]}40`,
                         }}
                       />
-                      <Typography variant="body2">{item.name}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: 'rgba(255, 255, 255, 0.7)' }}>{item.name}</Typography>
                     </Box>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffffff' }}>
                       ${item.amount.toLocaleString('es-CL')}
                     </Typography>
                   </Box>
@@ -507,9 +562,9 @@ const ProfessionalDashboard: React.FC = () => {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {/* Top Clientes */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ border: '1px solid #e8eaed' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#ffffff' }}>
                 Top 5 Clientes
               </Typography>
               <TableContainer>
@@ -543,11 +598,11 @@ const ProfessionalDashboard: React.FC = () => {
                             >
                               {index + 1}
                             </Box>
-                            {client.name}
+                            <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>{client.name}</Typography>
                           </Box>
                         </TableCell>
-                        <TableCell align="right">{client.invoices}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 500 }}>
+                        <TableCell align="right" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>{client.invoices}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600, color: '#ffffff' }}>
                           ${client.total.toLocaleString('es-CL')}
                         </TableCell>
                       </TableRow>
@@ -561,30 +616,30 @@ const ProfessionalDashboard: React.FC = () => {
 
         {/* Resumen Contable */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ border: '1px solid #e8eaed' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', borderRadius: 4, boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#ffffff' }}>
                 Resumen Contable
               </Typography>
               <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography variant="body2" color="text.secondary">Activos</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#2e7d32' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, p: 1.5, borderRadius: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>Activos</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     ${data.accounting.assets.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography variant="body2" color="text.secondary">Pasivos</Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#c62828' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5, p: 1.5, borderRadius: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>Pasivos</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     ${data.accounting.liabilities.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
-                <Divider sx={{ my: 1.5 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                <Divider sx={{ my: 1.5, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1.5, borderRadius: 1, background: 'linear-gradient(135deg, rgba(94, 114, 228, 0.2) 0%, rgba(130, 94, 228, 0.2) 100%)' }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600 }}>
                     Patrimonio
                   </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#0d47a1' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#ffffff' }}>
                     ${data.accounting.equity.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
@@ -597,64 +652,116 @@ const ProfessionalDashboard: React.FC = () => {
       {/* Estadísticas Adicionales */}
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #e8eaed', textAlign: 'center' }}>
-            <CardContent>
-              <PeopleIcon sx={{ fontSize: 40, color: '#0d47a1', mb: 1 }} />
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          <Card sx={{ border: 'none', background: 'linear-gradient(135deg, #1a2742 0%, #172b4d 100%)', textAlign: 'center', transition: 'all 0.3s ease', boxShadow: '0 0.5rem 1.5rem rgba(0, 0, 0, 0.3)', '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 1.5rem 3rem rgba(94, 114, 228, 0.5)' } }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 1.5,
+                boxShadow: '0 4px 6px rgba(94, 114, 228, 0.3)',
+              }}>
+                <PeopleIcon sx={{ fontSize: 28, color: 'white' }} />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff', mb: 0.5 }}>
                 {data.clients.total}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }}>
                 Total Clientes
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.clients.new_this_month} nuevos este mes
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #e8eaed', textAlign: 'center' }}>
-            <CardContent>
-              <ReceiptIcon sx={{ fontSize: 40, color: '#2e7d32', mb: 1 }} />
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          <Card sx={{ border: '1px solid #e9ecef', borderRadius: 2, textAlign: 'center', transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 0.75rem 1.5rem rgba(0, 0, 0, 0.1)' } }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(87deg, #2dce89 0, #1aae6e 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 1.5,
+                boxShadow: '0 4px 6px rgba(45, 206, 137, 0.3)',
+              }}>
+                <ReceiptIcon sx={{ fontSize: 28, color: 'white' }} />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
                 {data.invoices.total}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
                 Facturas Emitidas
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.invoices.overdue} vencidas
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #e8eaed', textAlign: 'center' }}>
-            <CardContent>
-              <ShoppingCartIcon sx={{ fontSize: 40, color: '#f57c00', mb: 1 }} />
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          <Card sx={{ border: '1px solid #e9ecef', borderRadius: 2, textAlign: 'center', transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 0.75rem 1.5rem rgba(0, 0, 0, 0.1)' } }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(87deg, #fb6340 0, #e04a2a 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 1.5,
+                boxShadow: '0 4px 6px rgba(251, 99, 64, 0.3)',
+              }}>
+                <ShoppingCartIcon sx={{ fontSize: 28, color: 'white' }} />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
                 {data.purchaseInvoices.total}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
                 Facturas de Compra
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.purchaseInvoices.pending} pendientes
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ border: '1px solid #e8eaed', textAlign: 'center' }}>
-            <CardContent>
-              <AssessmentIcon sx={{ fontSize: 40, color: '#7b1fa2', mb: 1 }} />
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          <Card sx={{ border: '1px solid #e9ecef', borderRadius: 2, textAlign: 'center', transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 0.75rem 1.5rem rgba(0, 0, 0, 0.1)' } }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ 
+                width: 56, 
+                height: 56, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(87deg, #11cdef 0, #0da5c0 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 1.5,
+                boxShadow: '0 4px 6px rgba(17, 205, 239, 0.3)',
+              }}>
+                <AssessmentIcon sx={{ fontSize: 28, color: 'white' }} />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
                 {data.financial.profit_margin.toFixed(1)}%
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
                 Margen de Utilidad
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.financial.net_profit > 0 ? 'Rentable' : 'Pérdida'}
               </Typography>
             </CardContent>
