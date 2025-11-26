@@ -1,299 +1,131 @@
 import express from 'express';
-import { body, validationResult, query } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import { authenticateToken } from './auth-simple';
+import { notificationService } from '../services/notification.service';
 
 const router = express.Router();
 
-// Tipos de notificaciones
-export type NotificationType = 'info' | 'warning' | 'error' | 'success' | 'approval' | 'deadline';
+// Datos en memoria para notificaciones
+let notifications: any[] = [];
 
-// Prioridad de notificaciones
-export type NotificationPriority = 'low' | 'medium' | 'high' | 'urgent';
-
-// Notificación
-interface Notification {
-  id: number;
-  user_id?: number; // null para notificaciones globales
-  type: NotificationType;
-  priority: NotificationPriority;
-  title: string;
-  message: string;
-  action_url?: string; // URL para acción relacionada
-  action_label?: string; // Label del botón de acción
-  read: boolean;
-  created_at: Date;
-  read_at?: Date;
-}
-
-// Alertas automáticas
-interface Alert {
-  id: number;
-  type: 'invoice_overdue' | 'quotation_expiring' | 'low_stock' | 'project_overdue' | 'payment_due' | 'approval_pending';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  title: string;
-  message: string;
-  reference_type?: string;
-  reference_id?: number;
-  created_at: Date;
-  resolved: boolean;
-  resolved_at?: Date;
-}
-
-// Datos en memoria
-let notifications: Notification[] = [];
-let alerts: Alert[] = [];
-
-// Crear notificación
-export const createNotification = (
-  userId: number | undefined,
-  type: NotificationType,
-  priority: NotificationPriority,
+/**
+ * Función helper para crear notificaciones
+ */
+export function createNotification(
+  userId: string | undefined,
+  type: 'success' | 'error' | 'warning' | 'info',
+  priority: 'low' | 'medium' | 'high',
   title: string,
-  message: string,
-  actionUrl?: string,
-  actionLabel?: string
-): Notification => {
-  const notification: Notification = {
+  message: string
+) {
+  const notification = {
     id: notifications.length + 1,
-    user_id: userId,
+    user_id: userId || null,
     type,
     priority,
     title,
     message,
-    action_url: actionUrl,
-    action_label: actionLabel,
     read: false,
-    created_at: new Date()
+    created_at: new Date().toISOString(),
   };
 
   notifications.push(notification);
   return notification;
-};
+}
 
-// Crear alerta automática
-export const createAlert = (
-  type: Alert['type'],
-  severity: Alert['severity'],
-  title: string,
-  message: string,
-  referenceType?: string,
-  referenceId?: number
-): Alert => {
-  const alert: Alert = {
-    id: alerts.length + 1,
-    type,
-    severity,
-    title,
-    message,
-    reference_type: referenceType,
-    reference_id: referenceId,
-    created_at: new Date(),
-    resolved: false
-  };
-
-  alerts.push(alert);
-  return alert;
-};
-
-// Obtener notificaciones del usuario
-router.get('/', authenticateToken, async (req: express.Request, res: express.Response) => {
+/**
+ * Enviar email
+ */
+router.post('/email', authenticateToken, [
+  body('to').isEmail(),
+  body('subject').notEmpty(),
+  body('html').notEmpty(),
+], async (req: express.Request, res: express.Response) => {
   try {
-    const { read, type, priority, limit } = req.query;
-    const user = (req as any).user;
-
-    let filtered = notifications.filter(n => !n.user_id || n.user_id === user.id);
-
-    if (read !== undefined) {
-      filtered = filtered.filter(n => n.read === (read === 'true'));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
     }
 
-    if (type) {
-      filtered = filtered.filter(n => n.type === type);
-    }
+    const { to, subject, html, text, from } = req.body;
 
-    if (priority) {
-      filtered = filtered.filter(n => n.priority === priority);
-    }
-
-    // Ordenar por fecha más reciente
-    filtered.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-
-    // Limitar resultados
-    const limitNum = limit ? parseInt(limit as string) : 50;
-    filtered = filtered.slice(0, limitNum);
-
-    res.json({
-      success: true,
-      data: filtered,
-      unread_count: filtered.filter(n => !n.read).length
-    });
-  } catch (error) {
-    console.error('Error obteniendo notificaciones:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
-  }
-});
-
-// Marcar notificación como leída
-router.patch('/:id/read', authenticateToken, async (req: express.Request, res: express.Response) => {
-  try {
-    const { id } = req.params;
-    const user = (req as any).user;
-
-    const notificationIndex = notifications.findIndex(
-      n => n.id === parseInt(id) && (!n.user_id || n.user_id === user.id)
-    );
-
-    if (notificationIndex === -1) {
-      return res.status(404).json({ success: false, error: 'Notificación no encontrada' });
-    }
-
-    notifications[notificationIndex] = {
-      ...notifications[notificationIndex],
-      read: true,
-      read_at: new Date()
-    };
-
-    res.json({
-      success: true,
-      message: 'Notificación marcada como leída',
-      data: notifications[notificationIndex]
-    });
-  } catch (error) {
-    console.error('Error marcando notificación como leída:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
-  }
-});
-
-// Marcar todas las notificaciones como leídas
-router.patch('/read-all', authenticateToken, async (req: express.Request, res: express.Response) => {
-  try {
-    const user = (req as any).user;
-
-    notifications.forEach((notification, index) => {
-      if (!notification.read && (!notification.user_id || notification.user_id === user.id)) {
-        notifications[index] = {
-          ...notification,
-          read: true,
-          read_at: new Date()
-        };
-      }
+    const sent = await notificationService.sendEmail({
+      to,
+      subject,
+      html,
+      text,
+      from,
     });
 
     res.json({
-      success: true,
-      message: 'Todas las notificaciones marcadas como leídas'
+      success: sent,
+      message: sent ? 'Email enviado exitosamente' : 'Error enviando email',
     });
-  } catch (error) {
-    console.error('Error marcando notificaciones como leídas:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  } catch (error: any) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ success: false, error: 'Error enviando email' });
   }
 });
 
-// Eliminar notificación
-router.delete('/:id', authenticateToken, async (req: express.Request, res: express.Response) => {
+/**
+ * Enviar notificación push
+ */
+router.post('/push', authenticateToken, [
+  body('userId').notEmpty(),
+  body('title').notEmpty(),
+  body('body').notEmpty(),
+], async (req: express.Request, res: express.Response) => {
   try {
-    const { id } = req.params;
-    const user = (req as any).user;
-
-    const notificationIndex = notifications.findIndex(
-      n => n.id === parseInt(id) && (!n.user_id || n.user_id === user.id)
-    );
-
-    if (notificationIndex === -1) {
-      return res.status(404).json({ success: false, error: 'Notificación no encontrada' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
     }
 
-    notifications.splice(notificationIndex, 1);
+    const { userId, title, body, data, fcmToken } = req.body;
 
-    res.json({
-      success: true,
-      message: 'Notificación eliminada exitosamente'
-    });
-  } catch (error) {
-    console.error('Error eliminando notificación:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
-  }
-});
-
-// Obtener alertas
-router.get('/alerts', authenticateToken, async (req: express.Request, res: express.Response) => {
-  try {
-    const { resolved, severity, type } = req.query;
-
-    let filtered = [...alerts];
-
-    if (resolved !== undefined) {
-      filtered = filtered.filter(a => a.resolved === (resolved === 'true'));
-    }
-
-    if (severity) {
-      filtered = filtered.filter(a => a.severity === severity);
-    }
-
-    if (type) {
-      filtered = filtered.filter(a => a.type === type);
-    }
-
-    // Ordenar por severidad y fecha
-    filtered.sort((a, b) => {
-      const severityOrder: { [key: string]: number } = { critical: 4, high: 3, medium: 2, low: 1 };
-      if (severityOrder[b.severity] !== severityOrder[a.severity]) {
-        return severityOrder[b.severity] - severityOrder[a.severity];
-      }
-      return b.created_at.getTime() - a.created_at.getTime();
+    const sent = await notificationService.sendPushNotification({
+      userId,
+      title,
+      body,
+      data,
+      fcmToken,
     });
 
     res.json({
-      success: true,
-      data: filtered,
-      unresolved_count: filtered.filter(a => !a.resolved).length
+      success: sent,
+      message: sent ? 'Notificación enviada exitosamente' : 'Error enviando notificación',
     });
-  } catch (error) {
-    console.error('Error obteniendo alertas:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  } catch (error: any) {
+    console.error('Error sending push notification:', error);
+    res.status(500).json({ success: false, error: 'Error enviando notificación' });
   }
 });
 
-// Resolver alerta
-router.patch('/alerts/:id/resolve', authenticateToken, async (req: express.Request, res: express.Response) => {
+/**
+ * Guardar FCM token
+ */
+router.post('/fcm-token', authenticateToken, [
+  body('userId').notEmpty(),
+  body('token').notEmpty(),
+], async (req: express.Request, res: express.Response) => {
   try {
-    const { id } = req.params;
-
-    const alertIndex = alerts.findIndex(a => a.id === parseInt(id));
-
-    if (alertIndex === -1) {
-      return res.status(404).json({ success: false, error: 'Alerta no encontrada' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
     }
 
-    alerts[alertIndex] = {
-      ...alerts[alertIndex],
-      resolved: true,
-      resolved_at: new Date()
-    };
+    const { userId, token } = req.body;
+
+    await notificationService.saveFCMToken(userId, token);
 
     res.json({
       success: true,
-      message: 'Alerta resuelta exitosamente',
-      data: alerts[alertIndex]
+      message: 'Token guardado exitosamente',
     });
-  } catch (error) {
-    console.error('Error resolviendo alerta:', error);
-    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  } catch (error: any) {
+    console.error('Error saving FCM token:', error);
+    res.status(500).json({ success: false, error: 'Error guardando token' });
   }
 });
-
-// Función para generar alertas automáticas
-export const checkAndGenerateAlerts = async (): Promise<void> => {
-  // Esta función se llamaría periódicamente para generar alertas automáticas
-  // Por ejemplo: facturas vencidas, cotizaciones por expirar, stock bajo, etc.
-  
-  // Ejemplo: alertas de facturas vencidas (se implementaría con datos reales)
-  const today = new Date();
-  // Aquí iría la lógica para verificar facturas vencidas, etc.
-};
 
 export default router;
-
-
-
-

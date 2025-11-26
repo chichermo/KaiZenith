@@ -23,6 +23,10 @@ import inventoryRoutes from './routes/inventory-simple';
 import projectsRoutes from './routes/projects-simple';
 import dashboardRoutes from './routes/dashboard-simple';
 import notificationsRoutes from './routes/notifications-simple';
+import aiSearchRoutes from './routes/ai-search-simple';
+import bankingEnhancedRoutes from './routes/banking-enhanced';
+import siiEnhancedRoutes from './routes/sii-enhanced';
+import paymentsRoutes from './routes/payments-simple';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -56,6 +60,10 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/ai-search', aiSearchRoutes);
+app.use('/api/banking-enhanced', bankingEnhancedRoutes);
+app.use('/api/sii-enhanced', siiEnhancedRoutes);
+app.use('/api/payments', paymentsRoutes);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
