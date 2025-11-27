@@ -34,9 +34,45 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Configuración CORS para producción
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // En desarrollo, permitir localhost
+    if (!origin || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+      return;
+    }
+    
+    // En producción, verificar el origen permitido
+    const allowedOrigins = process.env.FRONTEND_URL 
+      ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+      : [];
+    
+    // Si no hay FRONTEND_URL configurado, permitir todos (no recomendado para producción)
+    if (allowedOrigins.length === 0) {
+      console.warn('⚠️  FRONTEND_URL no configurado. CORS permitirá todos los orígenes.');
+      callback(null, true);
+      return;
+    }
+    
+    // Verificar si el origen está permitido
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  Origen no permitido: ${origin}`);
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
