@@ -253,7 +253,7 @@ const PurchaseOrders: React.FC = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await apiFetch('/purchase-orders', {
+      const response = await apiFetch('/purchase-orders');
 
       if (response.ok) {
         const data = await response.json();
@@ -271,7 +271,7 @@ const PurchaseOrders: React.FC = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await apiFetch('/suppliers', {
+      const response = await apiFetch('/suppliers');
 
       if (response.ok) {
         const data = await response.json();
@@ -363,7 +363,7 @@ const PurchaseOrders: React.FC = () => {
 
   const handleDownloadPDF = async (orderId: number) => {
     try {
-      const response = await apiFetch(`/purchase-orders/${orderId}/pdf`, {
+      const response = await apiFetch(`/purchase-orders/${orderId}/pdf`);
 
       if (response.ok) {
         const contentType = response.headers.get('content-type');

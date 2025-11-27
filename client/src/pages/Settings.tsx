@@ -315,7 +315,7 @@ const Settings: React.FC = () => {
 
   const fetchCompanyConfig = async () => {
     try {
-      const response = await apiFetch('/settings/company', {
+      const response = await apiFetch('/settings/company');
 
       if (response.ok) {
         const data = await response.json();
@@ -334,7 +334,7 @@ const Settings: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await apiFetch('/settings/users', {
+      const response = await apiFetch('/settings/users');
 
       if (response.ok) {
         const data = await response.json();
@@ -350,7 +350,7 @@ const Settings: React.FC = () => {
 
   const fetchIntegrations = async () => {
     try {
-      const response = await apiFetch('/settings/integrations', {
+      const response = await apiFetch('/settings/integrations');
 
       if (response.ok) {
         const data = await response.json();
@@ -364,7 +364,7 @@ const Settings: React.FC = () => {
 
   const fetchSystemStats = async () => {
     try {
-      const response = await apiFetch('/settings/stats', {
+      const response = await apiFetch('/settings/stats');
 
       if (response.ok) {
         const data = await response.json();

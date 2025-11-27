@@ -388,7 +388,7 @@ const Accounting: React.FC = () => {
       if (dateTo) params.append('date_to', dateTo);
       if (accountFilter) params.append('account', accountFilter);
 
-      const response = await apiFetch(`/accounting/report/pdf?${params}`, {
+      const response = await apiFetch(`/accounting/report/pdf?${params}`);
 
       if (response.ok) {
         const blob = await response.blob();

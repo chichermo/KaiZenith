@@ -112,7 +112,7 @@ const Workflow: React.FC = () => {
 
   const fetchPendingApprovals = async () => {
     try {
-      const response = await apiFetch('/workflow/pending', {
+      const response = await apiFetch('/workflow/pending');
 
       if (response.ok) {
         const data = await response.json();
@@ -153,7 +153,7 @@ const Workflow: React.FC = () => {
 
   const fetchDocumentHistory = async (documentType: string, documentId: number) => {
     try {
-      const response = await apiFetch(`/workflow/history/${documentType}/${documentId}`, {
+      const response = await apiFetch(`/workflow/history/${documentType}/${documentId}`);
 
       if (response.ok) {
         const data = await response.json();

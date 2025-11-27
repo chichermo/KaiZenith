@@ -142,7 +142,7 @@ const Projects: React.FC = () => {
       if (typeFilter) params.append('project_type', typeFilter);
       if (searchTerm) params.append('search', searchTerm);
 
-      const response = await apiFetch(`/projects?${params}`, {
+      const response = await apiFetch(`/projects?${params}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -157,7 +157,7 @@ const Projects: React.FC = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await apiFetch('/clients?limit=100', {
+      const response = await apiFetch('/clients?limit=100');
 
       if (response.ok) {
         const data = await response.json();
@@ -170,7 +170,7 @@ const Projects: React.FC = () => {
 
   const fetchProjectCosts = async (projectId: number) => {
     try {
-      const response = await apiFetch(`/projects/${projectId}`, {
+      const response = await apiFetch(`/projects/${projectId}`);
 
       if (response.ok) {
         const data = await response.json();
