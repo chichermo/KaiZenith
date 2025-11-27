@@ -366,10 +366,17 @@ const ProfessionalDashboard: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
+          <Typography variant="h4" sx={{ 
+            fontWeight: 700, 
+            background: 'linear-gradient(87deg, #ffffff 0, rgba(255, 255, 255, 0.9) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            mb: 0.5 
+          }}>
             Dashboard Profesional
           </Typography>
-          <Typography variant="body2" sx={{ color: '#8898aa' }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
             Última actualización: {format(lastRefresh, "dd 'de' MMMM 'a las' HH:mm")}
           </Typography>
         </Box>
@@ -697,13 +704,18 @@ const ProfessionalDashboard: React.FC = () => {
               }}>
                 <ReceiptIcon sx={{ fontSize: 28, color: 'white' }} />
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
+              <Typography variant="h4" sx={{ 
+                fontWeight: 700, 
+                color: '#ffffff',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                mb: 0.5 
+              }}>
                 {data.invoices.total}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 500 }}>
                 Facturas Emitidas
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.invoices.overdue} vencidas
               </Typography>
             </CardContent>
@@ -726,13 +738,18 @@ const ProfessionalDashboard: React.FC = () => {
               }}>
                 <ShoppingCartIcon sx={{ fontSize: 28, color: 'white' }} />
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
+              <Typography variant="h4" sx={{ 
+                fontWeight: 700, 
+                color: '#ffffff',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                mb: 0.5 
+              }}>
                 {data.purchaseInvoices.total}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 500 }}>
                 Facturas de Compra
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.purchaseInvoices.pending} pendientes
               </Typography>
             </CardContent>
@@ -755,13 +772,18 @@ const ProfessionalDashboard: React.FC = () => {
               }}>
                 <AssessmentIcon sx={{ fontSize: 28, color: 'white' }} />
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: '#32325d', mb: 0.5 }}>
+              <Typography variant="h4" sx={{ 
+                fontWeight: 700, 
+                color: '#ffffff',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                mb: 0.5 
+              }}>
                 {data.financial.profit_margin.toFixed(1)}%
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8898aa', fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 500 }}>
                 Margen de Utilidad
               </Typography>
-              <Typography variant="caption" sx={{ color: '#8898aa', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', mt: 0.5, fontSize: '0.75rem' }}>
                 {data.financial.net_profit > 0 ? 'Rentable' : 'Pérdida'}
               </Typography>
             </CardContent>

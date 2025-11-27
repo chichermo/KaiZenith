@@ -475,7 +475,7 @@ const Projects: React.FC = () => {
                           {project.name}
                         </Typography>
                         {project.description && (
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                             {project.description.substring(0, 50)}...
                           </Typography>
                         )}
@@ -496,7 +496,7 @@ const Projects: React.FC = () => {
                         <Box>
                           <Typography
                             variant="body2"
-                            color={overBudget ? 'error' : 'inherit'}
+                            sx={{ color: overBudget ? '#f5365c' : '#ffffff' }}
                           >
                             ${project.actual_cost.toLocaleString('es-CL')}
                           </Typography>

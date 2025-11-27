@@ -159,6 +159,9 @@ router.post('/', authenticateToken, [
       notes
     } = req.body;
 
+    // Normalizar teléfono: eliminar espacios
+    const normalizedPhone = phone.replace(/\s+/g, '');
+
     // Verificar si el RUT ya existe
     const existingClient = clients.find(c => c.rut === rut);
     if (existingClient) {
@@ -170,7 +173,7 @@ router.post('/', authenticateToken, [
       rut,
       name,
       email,
-      phone,
+      phone: normalizedPhone,
       address,
       city,
       region,
@@ -220,6 +223,11 @@ router.put('/:id', authenticateToken, [
     }
 
     const updates = req.body;
+
+    // Normalizar teléfono si se está actualizando
+    if (updates.phone) {
+      updates.phone = updates.phone.replace(/\s+/g, '');
+    }
 
     // Si se está actualizando el RUT, verificar que no exista otro cliente con el mismo RUT
     if (updates.rut) {

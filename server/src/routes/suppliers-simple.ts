@@ -183,6 +183,9 @@ router.post('/', authenticateToken, [
       discount_percentage
     } = req.body;
 
+    // Normalizar teléfono: eliminar espacios
+    const normalizedPhone = phone.replace(/\s+/g, '');
+
     // Verificar que el RUT no esté duplicado
     const existingSupplier = suppliers.find(s => s.rut === rut);
     if (existingSupplier) {
@@ -195,7 +198,7 @@ router.post('/', authenticateToken, [
       rut,
       name,
       email,
-      phone,
+      phone: normalizedPhone,
       address,
       city,
       region,
@@ -267,6 +270,9 @@ router.put('/:id', authenticateToken, [
       discount_percentage
     } = req.body;
 
+    // Normalizar teléfono: eliminar espacios
+    const normalizedPhone = phone.replace(/\s+/g, '');
+
     // Verificar que el RUT no esté duplicado (excluyendo el proveedor actual)
     const existingSupplier = suppliers.find(s => s.rut === rut && s.id !== parseInt(id));
     if (existingSupplier) {
@@ -279,7 +285,7 @@ router.put('/:id', authenticateToken, [
       rut,
       name,
       email,
-      phone,
+      phone: normalizedPhone,
       address,
       city,
       region,

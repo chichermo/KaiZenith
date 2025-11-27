@@ -206,7 +206,7 @@ const AccountingReports: React.FC = () => {
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
               Balance General
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Al {format(new Date(balanceDate), "dd 'de' MMMM 'de' yyyy")}
             </Typography>
           </Box>
@@ -254,7 +254,7 @@ const AccountingReports: React.FC = () => {
                         <TableRow key={code}>
                           <TableCell>
                             <Typography variant="body2">{code}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {data.description}
                             </Typography>
                           </TableCell>
@@ -283,7 +283,7 @@ const AccountingReports: React.FC = () => {
                         <TableRow key={code}>
                           <TableCell>
                             <Typography variant="body2">{code}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {data.description}
                             </Typography>
                           </TableCell>
@@ -334,7 +334,7 @@ const AccountingReports: React.FC = () => {
                         <TableRow key={code}>
                           <TableCell>
                             <Typography variant="body2">{code}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {data.description}
                             </Typography>
                           </TableCell>
@@ -363,7 +363,7 @@ const AccountingReports: React.FC = () => {
                         <TableRow key={code}>
                           <TableCell>
                             <Typography variant="body2">{code}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {data.description}
                             </Typography>
                           </TableCell>
@@ -403,7 +403,7 @@ const AccountingReports: React.FC = () => {
                         <TableRow key={code}>
                           <TableCell>
                             <Typography variant="body2">{code}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {data.description}
                             </Typography>
                           </TableCell>
@@ -427,11 +427,11 @@ const AccountingReports: React.FC = () => {
                 </Box>
 
                 <Divider sx={{ my: 2 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: '#f5f7fa', borderRadius: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 1, border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
                     Total Pasivos + Patrimonio
                   </Typography>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#212121' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff' }}>
                     ${(balanceSheet.liabilities.total + balanceSheet.equity_total).toLocaleString('es-CL')}
                   </Typography>
                 </Box>
@@ -453,7 +453,7 @@ const AccountingReports: React.FC = () => {
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
               Estado de Resultados
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Del {format(new Date(dateFrom), "dd 'de' MMMM 'de' yyyy")} al{' '}
               {format(new Date(dateTo), "dd 'de' MMMM 'de' yyyy")}
             </Typography>
@@ -606,9 +606,14 @@ const AccountingReports: React.FC = () => {
             <Divider sx={{ my: 3 }} />
 
             {/* Utilidad Neta */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3, bgcolor: '#f5f7fa', borderRadius: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 1, border: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <Box sx={{ minWidth: 300 }}>
-                <Typography variant="h4" sx={{ fontWeight: 600, textAlign: 'right', color: incomeStatement.totals.net_income >= 0 ? '#2e7d32' : '#c62828' }}>
+                <Typography variant="h4" sx={{ 
+                  fontWeight: 600, 
+                  textAlign: 'right', 
+                  color: incomeStatement.totals.net_income >= 0 ? '#2dce89' : '#f5365c',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                }}>
                   Utilidad Neta: ${incomeStatement.totals.net_income.toLocaleString('es-CL')}
                 </Typography>
               </Box>
@@ -627,7 +632,7 @@ const AccountingReports: React.FC = () => {
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
               Libro Mayor
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Del {format(new Date(dateFrom), "dd 'de' MMMM 'de' yyyy")} al{' '}
               {format(new Date(dateTo), "dd 'de' MMMM 'de' yyyy")}
             </Typography>
@@ -685,7 +690,7 @@ const AccountingReports: React.FC = () => {
                   {generalLedger.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} align="center">
-                        <Typography color="text.secondary" sx={{ py: 3 }}>
+                        <Typography sx={{ py: 3, color: 'rgba(255, 255, 255, 0.7)' }}>
                           No hay movimientos para el período seleccionado
                         </Typography>
                       </TableCell>
@@ -725,7 +730,7 @@ const AccountingReports: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
           Reportes Contables
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
           Reportes financieros detallados para auditoría y análisis contable
         </Typography>
       </Box>

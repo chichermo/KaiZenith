@@ -230,6 +230,12 @@ const Suppliers: React.FC = () => {
 
   const handleSaveSupplier = async () => {
     try {
+      // Limpiar espacios del teléfono
+      const cleanedData = {
+        ...formData,
+        phone: formData.phone.replace(/\s+/g, '')
+      };
+
       const url = editingSupplier 
         ? `http://localhost:5000/api/suppliers/${editingSupplier.id}`
         : 'http://localhost:5000/api/suppliers';
@@ -242,7 +248,7 @@ const Suppliers: React.FC = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(cleanedData)
       });
 
       if (response.ok) {
@@ -251,7 +257,15 @@ const Suppliers: React.FC = () => {
         fetchSuppliers();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Error al guardar el proveedor');
+        // Mostrar errores detallados de validación
+        if (errorData.details) {
+          const errorMessages = errorData.details.map((err: any) => 
+            `${err.param}: ${err.msg}`
+          ).join(', ');
+          setError(`Errores de validación: ${errorMessages}`);
+        } else {
+          setError(errorData.error || 'Error al guardar el proveedor');
+        }
       }
     } catch (error) {
       console.error('Error saving supplier:', error);

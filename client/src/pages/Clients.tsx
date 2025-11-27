@@ -156,15 +156,29 @@ const Clients: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Limpiar espacios del teléfono
+      const cleanedData = {
+        ...formData,
+        phone: formData.phone.replace(/\s+/g, '')
+      };
+
       if (editingClient) {
-        await axios.put(`/clients/${editingClient.id}`, formData);
+        await axios.put(`/clients/${editingClient.id}`, cleanedData);
       } else {
-        await axios.post('/clients', formData);
+        await axios.post('/clients', cleanedData);
       }
       fetchClients();
       handleClose();
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Error al guardar cliente');
+      // Mostrar errores detallados de validación
+      if (error.response?.data?.details) {
+        const errorMessages = error.response.data.details.map((err: any) => 
+          `${err.param}: ${err.msg}`
+        ).join(', ');
+        setError(`Errores de validación: ${errorMessages}`);
+      } else {
+        setError(error.response?.data?.error || 'Error al guardar cliente');
+      }
     }
   };
 
@@ -282,7 +296,7 @@ const Clients: React.FC = () => {
                       >
                         {client.name}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                         {client.rut}
                       </Typography>
                     </Box>

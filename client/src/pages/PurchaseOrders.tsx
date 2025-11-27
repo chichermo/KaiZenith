@@ -387,22 +387,30 @@ const PurchaseOrders: React.FC = () => {
       });
 
       if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `orden-compra-${orderId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        setSuccess('PDF descargado exitosamente');
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/pdf')) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `orden-compra-${orderId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          setSuccess('PDF descargado exitosamente');
+        } else {
+          // Si no es PDF, puede ser un error JSON
+          const errorData = await response.json();
+          setError(errorData.error || 'Error al descargar PDF');
+        }
       } else {
-        setError('Error al descargar PDF');
+        const errorData = await response.json().catch(() => ({ error: 'Error al descargar PDF' }));
+        setError(errorData.error || `Error ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error downloading PDF:', error);
-      setError('Error al descargar PDF');
+      setError(`Error al descargar PDF: ${error.message || 'Error desconocido'}`);
     }
   };
 
@@ -1179,9 +1187,9 @@ const PurchaseOrders: React.FC = () => {
           <Button 
             onClick={() => setOpenDialog(false)}
             sx={{
-              color: '#8898aa',
+              color: 'rgba(255, 255, 255, 0.8)',
               '&:hover': {
-                backgroundColor: 'rgba(136, 152, 170, 0.1)',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
               },
             }}
           >
@@ -1292,9 +1300,9 @@ const PurchaseOrders: React.FC = () => {
           <Button 
             onClick={() => setOpenViewDialog(false)}
             sx={{
-              color: '#8898aa',
+              color: 'rgba(255, 255, 255, 0.8)',
               '&:hover': {
-                backgroundColor: 'rgba(136, 152, 170, 0.1)',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
               },
             }}
           >

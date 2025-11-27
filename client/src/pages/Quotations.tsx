@@ -991,47 +991,52 @@ const Quotations: React.FC = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <Card variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
+              <Card variant="outlined" sx={{ p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Total Materiales:</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>Total Materiales:</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).materialsTotal.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Mano de Obra:</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>Mano de Obra:</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${formData.labor_cost.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Subtotal:</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>Subtotal:</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).subtotal.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Margen ({formData.margin_percentage}%):</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>Margen ({formData.margin_percentage}%):</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).marginAmount.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Neto:</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>Neto:</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).netTotal.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>IVA (19%):</Typography>
-                  <Typography fontWeight="bold">
+                  <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>IVA (19%):</Typography>
+                  <Typography fontWeight="bold" sx={{ color: '#ffffff' }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).tax.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
-                <Divider sx={{ my: 1 }} />
+                <Divider sx={{ my: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
                 <Box display="flex" justifyContent="space-between">
-                  <Typography variant="h6">TOTAL:</Typography>
-                  <Typography variant="h6" fontWeight="bold" color="primary">
+                  <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>TOTAL:</Typography>
+                  <Typography variant="h6" fontWeight="bold" sx={{ 
+                    background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}>
                     ${calculateTotals(formData.items, formData.labor_cost, formData.margin_percentage).total.toLocaleString('es-CL')}
                   </Typography>
                 </Box>
@@ -1133,20 +1138,26 @@ const Quotations: React.FC = () => {
               </TableContainer>
 
               <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Card variant="outlined" sx={{ p: 2, minWidth: 300, bgcolor: 'grey.50' }}>
+                <Card variant="outlined" sx={{ p: 2, minWidth: 300, bgcolor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                   <Box textAlign="right">
-                    <Typography><strong>Total Materiales:</strong> ${(viewingQuotation.materials_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>Total Materiales:</strong> ${(viewingQuotation.materials_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
                     {viewingQuotation.labor_cost > 0 && (
-                      <Typography><strong>Mano de Obra:</strong> ${viewingQuotation.labor_cost.toLocaleString('es-CL')}</Typography>
+                      <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>Mano de Obra:</strong> ${viewingQuotation.labor_cost.toLocaleString('es-CL')}</Typography>
                     )}
-                    <Typography><strong>Subtotal:</strong> ${viewingQuotation.subtotal.toLocaleString('es-CL')}</Typography>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>Subtotal:</strong> ${viewingQuotation.subtotal.toLocaleString('es-CL')}</Typography>
                     {viewingQuotation.margin_percentage && viewingQuotation.margin_percentage > 0 && (
-                      <Typography><strong>Margen ({viewingQuotation.margin_percentage}%):</strong> ${(viewingQuotation.margin_amount || 0).toLocaleString('es-CL')}</Typography>
+                      <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>Margen ({viewingQuotation.margin_percentage}%):</strong> ${(viewingQuotation.margin_amount || 0).toLocaleString('es-CL')}</Typography>
                     )}
-                    <Typography><strong>Neto:</strong> ${(viewingQuotation.net_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
-                    <Typography><strong>IVA (19%):</strong> ${viewingQuotation.tax.toLocaleString('es-CL')}</Typography>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="h6" color="primary"><strong>TOTAL:</strong> ${viewingQuotation.total.toLocaleString('es-CL')}</Typography>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>Neto:</strong> ${(viewingQuotation.net_total || viewingQuotation.subtotal).toLocaleString('es-CL')}</Typography>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.9)' }}><strong>IVA (19%):</strong> ${viewingQuotation.tax.toLocaleString('es-CL')}</Typography>
+                    <Divider sx={{ my: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                    <Typography variant="h6" sx={{ 
+                      background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      fontWeight: 700
+                    }}><strong>TOTAL:</strong> ${viewingQuotation.total.toLocaleString('es-CL')}</Typography>
                   </Box>
                 </Card>
               </Box>

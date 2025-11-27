@@ -385,7 +385,7 @@ const Tasks: React.FC = () => {
             <LinearProgress />
           ) : filteredTasks.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography color="text.secondary">No hay tareas para mostrar</Typography>
+              <Typography sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>No hay tareas para mostrar</Typography>
             </Box>
           ) : (
             <List>
@@ -393,10 +393,13 @@ const Tasks: React.FC = () => {
                 <ListItem
                   key={task.id}
                   sx={{
-                    border: '1px solid #e0e0e0',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: 1,
                     mb: 1,
-                    bgcolor: task.status === 'completed' ? '#f5f5f5' : '#ffffff',
+                    bgcolor: task.status === 'completed' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+                    '&:hover': {
+                      bgcolor: 'rgba(94, 114, 228, 0.1)',
+                    },
                   }}
                 >
                   <ListItemIcon>
@@ -415,6 +418,7 @@ const Tasks: React.FC = () => {
                           sx={{
                             textDecoration: task.status === 'completed' ? 'line-through' : 'none',
                             fontWeight: 500,
+                            color: 'rgba(255, 255, 255, 0.9)',
                           }}
                         >
                           {task.title}
@@ -431,13 +435,13 @@ const Tasks: React.FC = () => {
                     }
                     secondary={
                       <Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                        <Typography variant="body2" sx={{ mb: 0.5, color: 'rgba(255, 255, 255, 0.8)' }}>
                           {task.description}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <CalendarIcon sx={{ fontSize: 14, color: '#78909c' }} />
-                            <Typography variant="caption" color="text.secondary">
+                            <CalendarIcon sx={{ fontSize: 14, color: 'rgba(255, 255, 255, 0.7)' }} />
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {format(parseISO(task.due_date), 'dd/MM/yyyy')}
                             </Typography>
                             {isPast(parseISO(task.due_date)) && task.status !== 'completed' && (

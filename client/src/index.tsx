@@ -82,61 +82,61 @@ const theme = createTheme({
       fontSize: '2rem',
       lineHeight: 1.2,
       letterSpacing: '-0.015em',
-      color: '#32325d',
+      color: '#ffffff',
     },
     h2: {
       fontWeight: 600,
       fontSize: '1.75rem',
       lineHeight: 1.3,
       letterSpacing: '-0.01em',
-      color: '#32325d',
+      color: '#ffffff',
     },
     h3: {
       fontWeight: 600,
       fontSize: '1.5rem',
       lineHeight: 1.4,
       letterSpacing: '-0.005em',
-      color: '#32325d',
+      color: '#ffffff',
     },
     h4: {
       fontWeight: 600,
       fontSize: '1.25rem',
       lineHeight: 1.5,
-      color: '#32325d',
+      color: '#ffffff',
     },
     h5: {
       fontWeight: 600,
       fontSize: '1.125rem',
       lineHeight: 1.5,
-      color: '#32325d',
+      color: '#ffffff',
     },
     h6: {
       fontWeight: 600,
       fontSize: '1rem',
       lineHeight: 1.5,
-      color: '#32325d',
+      color: '#ffffff',
     },
     subtitle1: {
       fontWeight: 500,
       fontSize: '0.938rem',
       lineHeight: 1.5,
-      color: '#32325d',
+      color: 'rgba(255, 255, 255, 0.9)',
     },
     subtitle2: {
       fontWeight: 500,
       fontSize: '0.875rem',
       lineHeight: 1.5,
-      color: '#525f7f',
+      color: 'rgba(255, 255, 255, 0.8)',
     },
     body1: {
       fontSize: '0.875rem',
       lineHeight: 1.6,
-      color: '#525f7f',
+      color: 'rgba(255, 255, 255, 0.9)',
     },
     body2: {
       fontSize: '0.813rem',
       lineHeight: 1.6,
-      color: '#525f7f',
+      color: 'rgba(255, 255, 255, 0.8)',
     },
     button: {
       fontWeight: 500,
@@ -147,14 +147,14 @@ const theme = createTheme({
     caption: {
       fontSize: '0.75rem',
       lineHeight: 1.5,
-      color: '#8898aa',
+      color: 'rgba(255, 255, 255, 0.7)',
     },
     overline: {
       fontSize: '0.688rem',
       fontWeight: 500,
       textTransform: 'uppercase',
       letterSpacing: '0.1em',
-      color: '#8898aa',
+      color: 'rgba(255, 255, 255, 0.7)',
     },
   },
   shape: {
@@ -606,8 +606,10 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(255, 255, 255, 0.9)',
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#dee2e6',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: '#5e72e4',
@@ -615,6 +617,49 @@ const theme = createTheme({
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderColor: '#5e72e4',
             borderWidth: '1.5px',
+          },
+          '& .MuiSelect-icon': {
+            color: 'rgba(255, 255, 255, 0.7)',
+          },
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: 'rgba(255, 255, 255, 0.7)',
+          '&.Mui-focused': {
+            color: '#5e72e4',
+          },
+          '&.MuiInputLabel-shrink': {
+            color: 'rgba(255, 255, 255, 0.7)',
+          },
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          color: 'rgba(255, 255, 255, 0.7)',
+          '&.Mui-focused': {
+            color: '#5e72e4',
+          },
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: 'rgba(255, 255, 255, 0.9)',
+          backgroundColor: '#1a2742',
+          '&:hover': {
+            backgroundColor: 'rgba(94, 114, 228, 0.2)',
+          },
+          '&.Mui-selected': {
+            backgroundColor: 'rgba(94, 114, 228, 0.3)',
+            '&:hover': {
+              backgroundColor: 'rgba(94, 114, 228, 0.4)',
+            },
           },
         },
       },

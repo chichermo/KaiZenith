@@ -23,7 +23,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
             sx={{
               fontWeight: 500,
               mb: subtitle ? 0.5 : 0,
-              color: '#212121',
+              background: 'linear-gradient(87deg, #ffffff 0, rgba(255, 255, 255, 0.9) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
               fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
               wordBreak: 'break-word',
             }}
@@ -31,7 +34,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: { xs: '0.813rem', sm: '0.875rem' } }}>
               {subtitle}
             </Typography>
           )}
@@ -54,7 +57,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, action }) => {
           </Button>
         )}
       </Box>
-      <Box sx={{ borderBottom: '1px solid #e8eaed' }} />
+      <Box sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }} />
     </Box>
   );
 };

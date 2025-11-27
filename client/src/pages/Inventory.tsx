@@ -535,7 +535,7 @@ const Inventory: React.FC = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2">{movement.product_name}</Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {movement.product_code}
                             </Typography>
                           </Box>

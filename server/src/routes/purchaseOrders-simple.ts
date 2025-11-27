@@ -510,9 +510,19 @@ router.get('/:id/pdf', authenticateToken, async (req: express.Request, res: expr
     doc.text('Documento generado electrónicamente', 50, yPosition + 15);
 
     doc.end();
+    
+    // Manejar errores del stream
+    doc.on('error', (err) => {
+      console.error('Error en el stream del PDF:', err);
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, error: 'Error generando PDF' });
+      }
+    });
   } catch (error) {
     console.error('Error generando PDF:', error);
-    res.status(500).json({ success: false, error: 'Error generando PDF' });
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: 'Error generando PDF' });
+    }
   }
 });
 

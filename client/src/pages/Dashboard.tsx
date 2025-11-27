@@ -306,7 +306,7 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Typography sx={{ color: '#8898aa' }}>Cargando estadísticas...</Typography>
+        <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>Cargando estadísticas...</Typography>
       </Box>
     );
   }
@@ -330,7 +330,7 @@ const Dashboard: React.FC = () => {
         <Typography 
           variant="h6" 
           sx={{ 
-            color: '#8898aa',
+            color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '1.125rem',
             fontWeight: 400,
           }}

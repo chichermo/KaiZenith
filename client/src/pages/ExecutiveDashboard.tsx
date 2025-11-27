@@ -91,7 +91,7 @@ const KPICard: React.FC<{
             />
           )}
         </Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }} gutterBottom>
           {title}
         </Typography>
         <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
@@ -389,11 +389,16 @@ const ExecutiveDashboard: React.FC = () => {
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                <Typography variant="h4" color="primary">
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 1, border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <Typography variant="h4" sx={{ 
+                  background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>
                   {data.clients.total}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   Total Clientes
                 </Typography>
               </Box>
@@ -403,17 +408,17 @@ const ExecutiveDashboard: React.FC = () => {
                 <Typography variant="h4" color="success.main">
                   {data.clients.active}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   Clientes Activos
                 </Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#fff3e0', borderRadius: 1 }}>
-                <Typography variant="h4" color="warning.main">
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'rgba(255, 255, 255, 0.05)', borderRadius: 1, border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <Typography variant="h4" sx={{ color: '#fb6340' }}>
                   {data.clients.potential}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   Clientes Potenciales
                 </Typography>
               </Box>

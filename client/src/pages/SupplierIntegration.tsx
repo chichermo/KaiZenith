@@ -588,7 +588,7 @@ const SupplierIntegration: React.FC = () => {
                         <IconButton
                           size="small"
                           onClick={() => handleToggleFavorite(product.id)}
-                          sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'grey.100' } }}
+                          sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' } }}
                         >
                           <FavoriteIcon 
                             color={favorites.includes(product.id) ? 'error' : 'inherit'} 

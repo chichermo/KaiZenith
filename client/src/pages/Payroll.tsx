@@ -267,7 +267,7 @@ const Payroll: React.FC = () => {
           <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
             Recursos Humanos - Nómina
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
             Gestión de empleados y cálculo de nómina
           </Typography>
         </Box>
@@ -318,7 +318,7 @@ const Payroll: React.FC = () => {
                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                               {employee.name}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                               {employee.email}
                             </Typography>
                           </Box>
@@ -385,7 +385,7 @@ const Payroll: React.FC = () => {
                   })}
                 </Select>
               </FormControl>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                 {filteredPayroll.length} registro{filteredPayroll.length !== 1 ? 's' : ''} para este período
               </Typography>
             </Box>
@@ -536,75 +536,81 @@ const Payroll: React.FC = () => {
             {previewPayroll && (
               <Grid item xs={12}>
                 <Divider sx={{ my: 2 }} />
-                <Card variant="outlined" sx={{ bgcolor: '#f5f7fa' }}>
+                <Card variant="outlined" sx={{ bgcolor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>
                       Resumen de Cálculo
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Sueldo Base
                         </Typography>
-                        <Typography variant="h6">${previewPayroll.base_salary.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="h6" sx={{ color: '#ffffff' }}>${previewPayroll.base_salary.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Horas Extras
                         </Typography>
-                        <Typography variant="h6">${previewPayroll.overtime_amount.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="h6" sx={{ color: '#ffffff' }}>${previewPayroll.overtime_amount.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Bonificaciones
                         </Typography>
-                        <Typography variant="h6">${previewPayroll.bonuses.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="h6" sx={{ color: '#ffffff' }}>${previewPayroll.bonuses.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Asignaciones
                         </Typography>
-                        <Typography variant="h6">${previewPayroll.allowances.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="h6" sx={{ color: '#ffffff' }}>${previewPayroll.allowances.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1 }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <Divider sx={{ my: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Sueldo Bruto
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, color: '#ffffff' }}>
                           ${previewPayroll.gross_salary.toLocaleString('es-CL')}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           AFP (10%)
                         </Typography>
-                        <Typography variant="body1">${previewPayroll.afp.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="body1" sx={{ color: '#ffffff' }}>${previewPayroll.afp.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Salud (7%)
                         </Typography>
-                        <Typography variant="body1">${previewPayroll.health.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="body1" sx={{ color: '#ffffff' }}>${previewPayroll.health.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Impuesto a la Renta
                         </Typography>
-                        <Typography variant="body1">${previewPayroll.income_tax.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="body1" sx={{ color: '#ffffff' }}>${previewPayroll.income_tax.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Otros Descuentos
                         </Typography>
-                        <Typography variant="body1">${previewPayroll.other_deductions.toLocaleString('es-CL')}</Typography>
+                        <Typography variant="body1" sx={{ color: '#ffffff' }}>${previewPayroll.other_deductions.toLocaleString('es-CL')}</Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <Divider sx={{ my: 1 }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <Divider sx={{ my: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Sueldo Neto
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                        <Typography variant="h4" sx={{ 
+                          fontWeight: 600, 
+                          background: 'linear-gradient(87deg, #5e72e4 0, #825ee4 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                        }}>
                           ${previewPayroll.net_salary.toLocaleString('es-CL')}
                         </Typography>
                       </Grid>

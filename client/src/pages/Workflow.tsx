@@ -351,7 +351,7 @@ const Workflow: React.FC = () => {
                         sx={{ mb: 1 }}
                       />
                       {config.auto_approve_limit && (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                           Auto-aprobación hasta: ${config.auto_approve_limit.toLocaleString('es-CL')}
                         </Typography>
                       )}
