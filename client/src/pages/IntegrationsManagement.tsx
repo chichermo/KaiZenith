@@ -81,6 +81,7 @@ import {
   CalendarToday as CalendarIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface SIIStatus {
   rut: string;
@@ -221,7 +222,7 @@ const IntegrationsManagement: React.FC = () => {
 
   const fetchBanks = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/banking/banks', {
+      const response = await apiFetch('/banking/banks', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -247,7 +248,7 @@ const IntegrationsManagement: React.FC = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:5000/api/sii/tax-status/${rut}`, {
+      const response = await apiFetch(`/sii/tax-status/${rut}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -274,7 +275,7 @@ const IntegrationsManagement: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/banking/balance', {
+      const response = await apiFetch('/banking/balance', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -304,7 +305,7 @@ const IntegrationsManagement: React.FC = () => {
 
   const validateRut = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/sii/validate-rut', {
+      const response = await apiFetch('/sii/validate-rut', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

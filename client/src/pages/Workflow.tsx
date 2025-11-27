@@ -48,6 +48,7 @@ import {
   Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface ApprovalRecord {
   id: number;
@@ -111,12 +112,7 @@ const Workflow: React.FC = () => {
 
   const fetchPendingApprovals = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/workflow/pending', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/workflow/pending', {
 
       if (response.ok) {
         const data = await response.json();
@@ -140,7 +136,7 @@ const Workflow: React.FC = () => {
     try {
       const types = ['quotation', 'purchase_order', 'invoice', 'expense', 'payment'];
       const configPromises = types.map(type =>
-        fetch(`http://localhost:5000/api/workflow/config/${type}`, {
+        apiFetch(`/workflow/config/${type}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -157,12 +153,7 @@ const Workflow: React.FC = () => {
 
   const fetchDocumentHistory = async (documentType: string, documentId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/workflow/history/${documentType}/${documentId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch(`/workflow/history/${documentType}/${documentId}`, {
 
       if (response.ok) {
         const data = await response.json();
@@ -186,12 +177,8 @@ const Workflow: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/workflow/approval/${selectedApproval.id}/action`, {
+      const response = await apiFetch(`/workflow/approval/${selectedApproval.id}/action`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           action,
           comments

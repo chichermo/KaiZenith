@@ -53,6 +53,7 @@ import {
   AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 import PageHeader from '../components/PageHeader';
 
 interface InvoiceItem {
@@ -241,7 +242,7 @@ const Invoices: React.FC = () => {
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/invoices', {
+      const response = await apiFetch('/invoices', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -264,7 +265,7 @@ const Invoices: React.FC = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/clients', {
+      const response = await apiFetch('/clients', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -324,7 +325,7 @@ const Invoices: React.FC = () => {
         items: formData.items.filter(item => item.description.trim() !== '')
       };
 
-      const response = await fetch('http://localhost:5000/api/invoices', {
+      const response = await apiFetch('/invoices', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -349,7 +350,7 @@ const Invoices: React.FC = () => {
 
   const handleUpdateStatus = async (invoiceId: number, status: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}/status`, {
+      const response = await apiFetch(`/invoices/${invoiceId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -373,7 +374,7 @@ const Invoices: React.FC = () => {
 
   const handleDownloadPDF = async (invoiceId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/invoices/${invoiceId}/pdf`, {
+      const response = await apiFetch(`/invoices/${invoiceId}/pdf`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

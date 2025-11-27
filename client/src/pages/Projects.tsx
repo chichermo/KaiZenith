@@ -47,6 +47,7 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface Project {
   id: number;
@@ -141,12 +142,7 @@ const Projects: React.FC = () => {
       if (typeFilter) params.append('project_type', typeFilter);
       if (searchTerm) params.append('search', searchTerm);
 
-      const response = await fetch(`http://localhost:5000/api/projects?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch(`/projects?${params}`, {
 
       if (response.ok) {
         const data = await response.json();
@@ -161,12 +157,7 @@ const Projects: React.FC = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/clients?limit=100', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/clients?limit=100', {
 
       if (response.ok) {
         const data = await response.json();
@@ -179,12 +170,7 @@ const Projects: React.FC = () => {
 
   const fetchProjectCosts = async (projectId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/projects/${projectId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch(`/projects/${projectId}`, {
 
       if (response.ok) {
         const data = await response.json();
@@ -234,17 +220,13 @@ const Projects: React.FC = () => {
     try {
       setLoading(true);
       const url = selectedProject
-        ? `http://localhost:5000/api/projects/${selectedProject.id}`
-        : 'http://localhost:5000/api/projects';
-
+        ? `/projects/${selectedProject.id}`
+        : '/projects';
+      
       const method = selectedProject ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           ...formData,
           client_id: parseInt(formData.client_id),
@@ -286,12 +268,8 @@ const Projects: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/projects/${selectedProject.id}/costs`, {
+      const response = await apiFetch(`/projects/${selectedProject.id}/costs`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           ...costFormData,
           reference_id: costFormData.reference_id ? parseInt(costFormData.reference_id) : undefined,
@@ -323,12 +301,8 @@ const Projects: React.FC = () => {
 
   const handleUpdateProgress = async (projectId: number, progress: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/projects/${projectId}`, {
+      const response = await apiFetch(`/projects/${projectId}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ progress })
       });
 

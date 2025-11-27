@@ -63,6 +63,7 @@ import {
   FilterList as FilterIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface Product {
   id: string;
@@ -269,7 +270,7 @@ const SupplierIntegration: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/supplier-integration/categories', {
+      const response = await apiFetch('/supplier-integration/categories', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -290,7 +291,7 @@ const SupplierIntegration: React.FC = () => {
 
   const fetchStores = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/supplier-integration/stores', {
+      const response = await apiFetch('/supplier-integration/stores', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -323,7 +324,7 @@ const SupplierIntegration: React.FC = () => {
       if (supplierFilter.length > 0) params.append('suppliers', supplierFilter.join(','));
       params.append('limit', '50');
 
-      const response = await fetch(`http://localhost:5000/api/supplier-integration/search?${params}`, {
+      const response = await apiFetch(`/supplier-integration/search?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -378,7 +379,7 @@ const SupplierIntegration: React.FC = () => {
       if (categoryFilter) params.append('category', categoryFilter);
       params.append('limit', '20');
 
-      const response = await fetch(`http://localhost:5000/api/supplier-integration/compare/${encodeURIComponent(searchTerm)}?${params}`, {
+      const response = await apiFetch(`/supplier-integration/compare/${encodeURIComponent(searchTerm)}?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

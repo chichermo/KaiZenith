@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config/api';
 
 interface User {
   id: number;
@@ -19,7 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Configurar axios para incluir el token en todas las peticiones
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = API_URL;
 
 // Interceptor para agregar el token a las peticiones
 // Usar un flag para evitar registrar múltiples interceptores

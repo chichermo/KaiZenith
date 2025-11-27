@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from '../utils/api';
 
 interface Notification {
   id: number;
@@ -67,11 +68,7 @@ const NotificationBell: React.FC = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch('http://localhost:5000/api/notifications?limit=10', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
+        const response = await apiFetch('/notifications?limit=10', {
           signal: controller.signal
         });
 
@@ -116,13 +113,9 @@ const NotificationBell: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const response = await fetch('http://localhost:5000/api/notifications?limit=10', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        signal: controller.signal
-      });
+        const response = await apiFetch('/notifications?limit=10', {
+          signal: controller.signal
+        });
 
       clearTimeout(timeoutId);
 
@@ -148,12 +141,8 @@ const NotificationBell: React.FC = () => {
 
   const handleMarkAsRead = async (notificationId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await apiFetch(`/notifications/${notificationId}/read`, {
+        method: 'PATCH'
       });
 
       if (response.ok) {
@@ -166,12 +155,8 @@ const NotificationBell: React.FC = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/notifications/read-all', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await apiFetch('/notifications/read-all', {
+        method: 'PATCH'
       });
 
       if (response.ok) {

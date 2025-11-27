@@ -55,6 +55,7 @@ import {
   AccountTree as ChartIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface AccountingEntry {
   id: number;
@@ -213,7 +214,7 @@ const Accounting: React.FC = () => {
 
   const fetchEntries = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/accounting/entries', {
+      const response = await apiFetch('/accounting/entries', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -234,7 +235,7 @@ const Accounting: React.FC = () => {
 
   const fetchChartOfAccounts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/accounting/chart-of-accounts', {
+      const response = await apiFetch('/accounting/chart-of-accounts', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -255,7 +256,7 @@ const Accounting: React.FC = () => {
 
   const fetchBalanceSheet = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/accounting/balance-sheet', {
+      const response = await apiFetch('/accounting/balance-sheet', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -273,7 +274,7 @@ const Accounting: React.FC = () => {
 
   const fetchIncomeStatement = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/accounting/income-statement', {
+      const response = await apiFetch('/accounting/income-statement', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -296,7 +297,7 @@ const Accounting: React.FC = () => {
       if (dateFrom) params.append('date_from', dateFrom);
       if (dateTo) params.append('date_to', dateTo);
 
-      const response = await fetch(`http://localhost:5000/api/accounting/general-ledger?${params}`, {
+      const response = await apiFetch(`/accounting/general-ledger?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -329,17 +330,13 @@ const Accounting: React.FC = () => {
   const handleSaveEntry = async () => {
     try {
       const url = editingEntry 
-        ? `http://localhost:5000/api/accounting/entries/${editingEntry.id}`
-        : 'http://localhost:5000/api/accounting/entries';
+        ? `/accounting/entries/${editingEntry.id}`
+        : '/accounting/entries';
       
       const method = editingEntry ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(formData)
       });
 
@@ -391,11 +388,7 @@ const Accounting: React.FC = () => {
       if (dateTo) params.append('date_to', dateTo);
       if (accountFilter) params.append('account', accountFilter);
 
-      const response = await fetch(`http://localhost:5000/api/accounting/report/pdf?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await apiFetch(`/accounting/report/pdf?${params}`, {
 
       if (response.ok) {
         const blob = await response.blob();

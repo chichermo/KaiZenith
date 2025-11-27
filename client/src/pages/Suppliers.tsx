@@ -45,6 +45,7 @@ import {
   Cancel as InactiveIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface Supplier {
   id: number;
@@ -162,7 +163,7 @@ const Suppliers: React.FC = () => {
   const fetchSuppliers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/suppliers', {
+      const response = await apiFetch('/suppliers', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -237,17 +238,13 @@ const Suppliers: React.FC = () => {
       };
 
       const url = editingSupplier 
-        ? `http://localhost:5000/api/suppliers/${editingSupplier.id}`
-        : 'http://localhost:5000/api/suppliers';
+        ? `/suppliers/${editingSupplier.id}`
+        : '/suppliers';
       
       const method = editingSupplier ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(cleanedData)
       });
 
@@ -279,12 +276,8 @@ const Suppliers: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/suppliers/${supplierId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await apiFetch(`/suppliers/${supplierId}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {

@@ -58,6 +58,7 @@ import {
   Info as InfoIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface CompanyConfig {
   id: number;
@@ -314,12 +315,7 @@ const Settings: React.FC = () => {
 
   const fetchCompanyConfig = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/company', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/settings/company', {
 
       if (response.ok) {
         const data = await response.json();
@@ -338,12 +334,7 @@ const Settings: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/settings/users', {
 
       if (response.ok) {
         const data = await response.json();
@@ -359,12 +350,7 @@ const Settings: React.FC = () => {
 
   const fetchIntegrations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/integrations', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/settings/integrations', {
 
       if (response.ok) {
         const data = await response.json();
@@ -378,12 +364,7 @@ const Settings: React.FC = () => {
 
   const fetchSystemStats = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/stats', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/settings/stats', {
 
       if (response.ok) {
         const data = await response.json();
@@ -396,12 +377,8 @@ const Settings: React.FC = () => {
 
   const handleSaveCompanyConfig = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/company', {
+      const response = await apiFetch('/settings/company', {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(companyForm)
       });
 
@@ -445,20 +422,16 @@ const Settings: React.FC = () => {
   const handleSaveUser = async () => {
     try {
       const url = editingUser 
-        ? `http://localhost:5000/api/settings/users/${editingUser.id}`
-        : 'http://localhost:5000/api/settings/users';
+        ? `/settings/users/${editingUser.id}`
+        : '/settings/users';
       
       const method = editingUser ? 'PUT' : 'POST';
       const body = editingUser 
         ? { email: userForm.email, name: userForm.name, role: userForm.role, active: userForm.active }
         : userForm;
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(body)
       });
 
@@ -482,12 +455,8 @@ const Settings: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/settings/users/${userId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await apiFetch(`/settings/users/${userId}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -505,12 +474,8 @@ const Settings: React.FC = () => {
 
   const handleSaveIntegrations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings/integrations', {
+      const response = await apiFetch('/settings/integrations', {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(integrationForm)
       });
 

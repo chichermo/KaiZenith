@@ -74,6 +74,7 @@ import {
   Inventory as InventoryIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface Product {
   id: string;
@@ -285,7 +286,7 @@ const EnhancedSupplierIntegration: React.FC = () => {
 
   const fetchSupplierStats = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/intelligent-search/suppliers/stats', {
+      const response = await apiFetch('/intelligent-search/suppliers/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -313,7 +314,7 @@ const EnhancedSupplierIntegration: React.FC = () => {
 
   const fetchAllSuppliers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/intelligent-search/suppliers', {
+      const response = await apiFetch('/intelligent-search/suppliers', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -349,7 +350,7 @@ const EnhancedSupplierIntegration: React.FC = () => {
       if (availabilityFilter) params.append('available_only', 'true');
       params.append('limit', '50');
 
-      const response = await fetch(`http://localhost:5000/api/intelligent-search/search?${params}`, {
+      const response = await apiFetch(`/intelligent-search/search?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -46,6 +46,7 @@ import {
   Inventory as InventoryIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 interface PurchaseOrderItem {
   id: number;
@@ -252,12 +253,7 @@ const PurchaseOrders: React.FC = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/purchase-orders', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/purchase-orders', {
 
       if (response.ok) {
         const data = await response.json();
@@ -275,12 +271,7 @@ const PurchaseOrders: React.FC = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/suppliers', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiFetch('/suppliers', {
 
       if (response.ok) {
         const data = await response.json();
@@ -331,12 +322,8 @@ const PurchaseOrders: React.FC = () => {
         items: formData.items.filter(item => item.description.trim() !== '')
       };
 
-      const response = await fetch('http://localhost:5000/api/purchase-orders', {
+      const response = await apiFetch('/purchase-orders', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(orderData)
       });
 
@@ -356,12 +343,8 @@ const PurchaseOrders: React.FC = () => {
 
   const handleUpdateStatus = async (orderId: number, status: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/purchase-orders/${orderId}/status`, {
+      const response = await apiFetch(`/purchase-orders/${orderId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ status })
       });
 
@@ -380,11 +363,7 @@ const PurchaseOrders: React.FC = () => {
 
   const handleDownloadPDF = async (orderId: number) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/purchase-orders/${orderId}/pdf`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await apiFetch(`/purchase-orders/${orderId}/pdf`, {
 
       if (response.ok) {
         const contentType = response.headers.get('content-type');
